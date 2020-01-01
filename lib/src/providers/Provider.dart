@@ -24,17 +24,17 @@ class _Provider
 
     for(int i=0; i < urgencias.length ; i++)
     {
-      allData.putIfAbsent(i.toString()+"_Urgencias", ()=> urgencias[i]);
+      allData.putIfAbsent(i.toString()+"_Urgen", ()=> urgencias[i]);
     }
 
     for(int i=0; i < bomberos.length ; i++)
     {
-      allData.putIfAbsent(i.toString()+"_Bomberos", ()=> bomberos[i]);
+      allData.putIfAbsent(i.toString()+"_Bombe", ()=> bomberos[i]);
     }
 
     for(int i=0; i < carabineros.length ; i++)
     {
-      allData.putIfAbsent(i.toString()+"_Carabineros", ()=> carabineros[i]);
+      allData.putIfAbsent(i.toString()+"_Carab", ()=> carabineros[i]);
     }
 
     return allData;

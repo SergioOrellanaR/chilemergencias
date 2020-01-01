@@ -19,7 +19,6 @@ class _HomePageState extends State<HomePage> {
 
   onPressedAction() async
   {
-    
     Map<String, dynamic> information = await provider.allDataToMap();
     information.forEach((k,v) => print(k));
   }
