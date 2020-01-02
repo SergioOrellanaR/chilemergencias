@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chilemergencias/src/providers/Provider.dart';
 import 'package:chilemergencias/utils/private.dart' as privateInfo;
 import 'package:flutter/material.dart';
@@ -12,15 +14,26 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  LatLng _myPosition;
+  StreamController streamController;
+
   Map<String, dynamic> _allData;
+  
   MapboxMap _mapboxMap;
+  int counter = 0;
+
+  @override
+  void initState() { 
+    super.initState();
+    _myPosition = new LatLng(0, 0);
+  }
 
   @override
   Widget build(BuildContext context) {
     // loadInformation();
     return Scaffold(
       // appBar: AppBar(title: Text("Hi")),
-      body: futureBuildMap(),
+      body: mapWithStreaming(),
       floatingActionButton: FloatingActionButton(onPressed: (){},),
     );
   }
@@ -52,35 +65,44 @@ class _HomePageState extends State<HomePage> {
 
   Future<MapboxMap> getMap() async
   {
-    LatLng _latLng = await getMyLatLngPosition();
 
     return MapboxMap(
-      initialCameraPosition: CameraPosition(target: _latLng, zoom: 8.0),
-
+      initialCameraPosition: CameraPosition(target: _myPosition, zoom: 8.0),
       // myLocationEnabled: true,
       // compassEnabled: true,
-
     );
   }
 
-  Future<LatLng> getMyLatLngPosition() async
-  {
-    final location = new Location();
-    LocationData userLocation;
-    userLocation = await location.getLocation();
-    return LatLng(userLocation.latitude,userLocation.longitude);
-  }
+  // streamLocation()
+  // {
+  //   var location = new Location();
 
-  centerMapOnMyPosition()
+  //   location.onLocationChanged().listen((LocationData currentLocation) {
+  //     LatLng latLng = new LatLng(currentLocation.latitude, currentLocation.longitude);
+  //     setState(() {
+  //       _myPosition = latLng;
+  //     });
+  //   });
+    
+  // }
+
+  mapWithStreaming()
   {
     var location = new Location();
+    return StreamBuilder(
+      stream: location.onLocationChanged(),
+      builder: (BuildContext context, AsyncSnapshot<LocationData> snapshot)
+      {
+        if (snapshot.hasData) {
+            _myPosition = LatLng(snapshot.data.latitude, snapshot.data.longitude);
 
-    location.onLocationChanged().listen((LocationData currentLocation) {
-      print(currentLocation.latitude);
-      print(currentLocation.longitude);
-    });
+          return MapboxMap(initialCameraPosition: CameraPosition(target: _myPosition));
 
-
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
   }
 
   // _loadListFromFirebase(ProductsBloc pbloc) {
