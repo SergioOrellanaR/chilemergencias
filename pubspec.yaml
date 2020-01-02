@@ -17,6 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  location: ^2.3.5
   mapbox_gl:
   flutter_map:
   flutter:
