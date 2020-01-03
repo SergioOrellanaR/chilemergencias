@@ -1,103 +1,66 @@
 import 'dart:async';
 
+import 'package:chilemergencias/src/models/BomberosModel.dart';
+import 'package:chilemergencias/src/models/CarabinerosModel.dart';
+import 'package:chilemergencias/src/models/UrgenciasModel.dart';
 import 'package:chilemergencias/src/providers/Provider.dart';
 import 'package:chilemergencias/utils/private.dart' as privateInfo;
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
+//https://stackoverflow.com/questions/54910211/errorflutter-lib-ui-ui-dart-state-cc148-unhandled-exception/57087364
 
 class _HomePageState extends State<HomePage> {
-
   LatLng _myPosition;
-  StreamController streamController;
-
+  MapboxMapController _mapController;
+  MapboxMap _mapBoxMap;
   Map<String, dynamic> _allData;
-  
-  MapboxMap _mapboxMap;
-  int counter = 0;
+  List<Symbol> _markers = new List();
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     _myPosition = new LatLng(0, 0);
   }
 
   @override
   Widget build(BuildContext context) {
-    // loadInformation();
     return Scaffold(
       // appBar: AppBar(title: Text("Hi")),
-      body: mapWithStreaming(),
-      floatingActionButton: FloatingActionButton(onPressed: (){},),
+      body: Stack(children: <Widget>[
+        mapWithStreaming(),
+        drawInstitutionsOnMap()
+      ],
+        
+        
+      ),
+      floatingActionButton: _centerGpsCamera()      
     );
   }
 
-
-  Widget futureBuildMap()
-  {
-    return FutureBuilder(
-      future: getMap(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if(snapshot.hasData)
-        {
-          _mapboxMap = snapshot.data;
-          return snapshot.data;
-        }
-        else
-        {
-          return Center(child: CircularProgressIndicator());
-        }
-      },
-    );
+  FloatingActionButton _centerGpsCamera() {
+    return FloatingActionButton(onPressed: () async {
+      await _mapController.moveCamera(CameraUpdate.newLatLng(_myPosition));
+    });
   }
 
-
-  loadInformation() async
-  {
-    _allData = await provider.allDataToMap();
-  }
-
-  Future<MapboxMap> getMap() async
-  {
-
-    return MapboxMap(
-      initialCameraPosition: CameraPosition(target: _myPosition, zoom: 8.0),
-      // myLocationEnabled: true,
-      // compassEnabled: true,
-    );
-  }
-
-  // streamLocation()
-  // {
-  //   var location = new Location();
-
-  //   location.onLocationChanged().listen((LocationData currentLocation) {
-  //     LatLng latLng = new LatLng(currentLocation.latitude, currentLocation.longitude);
-  //     setState(() {
-  //       _myPosition = latLng;
-  //     });
-  //   });
-    
-  // }
-
-  mapWithStreaming()
-  {
+  //Despues descubri que el mismo MapBoxMap me permite centrar la ubicación XD
+  mapWithStreaming() {
     var location = new Location();
     return StreamBuilder(
       stream: location.onLocationChanged(),
-      builder: (BuildContext context, AsyncSnapshot<LocationData> snapshot)
-      {
+      builder: (BuildContext context, AsyncSnapshot<LocationData> snapshot) {
         if (snapshot.hasData) {
-            _myPosition = LatLng(snapshot.data.latitude, snapshot.data.longitude);
-
-          return MapboxMap(initialCameraPosition: CameraPosition(target: _myPosition));
-
+          _myPosition = LatLng(snapshot.data.latitude, snapshot.data.longitude);
+          if (_mapBoxMap == null) {
+            _createMapBoxMap();
+          }
+          return _mapBoxMap;
         } else {
           return Center(child: CircularProgressIndicator());
         }
@@ -105,106 +68,90 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // _loadListFromFirebase(ProductsBloc pbloc) {
+  void _createMapBoxMap() {
+    _mapBoxMap = MapboxMap(
+      initialCameraPosition: CameraPosition(target: _myPosition, zoom: 10),
+      myLocationEnabled: true,
+      onMapCreated: (controller) {
+        _mapController = controller;
+      },
+      compassEnabled: true,
+      //minMaxZoomPreference: MinMaxZoomPreference(),
+      //onCameraTrackingDismissed: (){print("Salimos del foco perrito");},
+      rotateGesturesEnabled: false,
+      tiltGesturesEnabled: true,
+      zoomGesturesEnabled: true
+    );
+  }
 
-  //   return StreamBuilder(
-  //     stream: pbloc.productsStream ,
-  //     builder: (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot){
-  //       if (snapshot.hasData) {
-  //         final products = snapshot.data;
+  //TODO: Controlar que map controller no sea null mientras se tenga data.
+  Widget drawInstitutionsOnMap()
+  {
+    return FutureBuilder(
+      future: provider.allDataToMap(),
+      builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
+        if (snapshot.hasData && _mapController != null)
+        {
+          for (BomberosModel item in provider.bomberos) {
+            _addSymbol(item);
+          }
 
-  //         return ListView.builder(
-  //           itemCount: products.length,
-  //           itemBuilder: (context, i) => _buildItem(context, products[i], pbloc),
-  //         );
-  //       } else {
-  //         return Center(child: CircularProgressIndicator());
-  //       }
-  //     },
-  //   );
-  // }
-  // @override
-  // Widget build(BuildContext context) {
-  //   final MapboxMap mapboxMap = MapboxMap(
-  //     onMapCreated: onMapCreated,
-  //     initialCameraPosition: _kInitialPosition,
-  //     trackCameraPosition: true,
-  //     compassEnabled: _compassEnabled,
-  //     cameraTargetBounds: _cameraTargetBounds,
-  //     minMaxZoomPreference: _minMaxZoomPreference,
-  //     styleString: _styleString,
-  //     rotateGesturesEnabled: _rotateGesturesEnabled,
-  //     scrollGesturesEnabled: _scrollGesturesEnabled,
-  //     tiltGesturesEnabled: _tiltGesturesEnabled,
-  //     zoomGesturesEnabled: _zoomGesturesEnabled,
-  //     myLocationEnabled: _myLocationEnabled,
-  //     myLocationTrackingMode: _myLocationTrackingMode,
-  //     myLocationRenderMode: MyLocationRenderMode.GPS,
-  //     onMapClick: (point, latLng) async {
-  //       print("${point.x},${point.y}   ${latLng.latitude}/${latLng.longitude}");
-  //       List features = await mapController.queryRenderedFeatures(point, [],null);
-  //       if (features.length>0) {
-  //         print(features[0]);
-  //       }
-  //     },
-  //     onCameraTrackingDismissed: () {
-  //       this.setState(() {
-  //         _myLocationTrackingMode = MyLocationTrackingMode.None;
-  //       });
-  //     }
-  //   );
+          for (CarabinerosModel item in provider.carabineros) {
+            _addCircle(item);
+          }
 
-  //   final List<Widget> columnChildren = <Widget>[
-  //     Padding(
-  //       padding: const EdgeInsets.all(10.0),
-  //       child: Center(
-  //         child: SizedBox(
-  //           width: 300.0,
-  //           height: 200.0,
-  //           child: mapboxMap,
-  //         ),
-  //       ),
-  //     ),
-  //   ];
 
-  //   if (mapController != null) {
-  //     columnChildren.add(
-  //       Expanded(
-  //         child: ListView(
-  //           children: <Widget>[
-  //             Text('camera bearing: ${_position.bearing}'),
-  //             Text(
-  //                 'camera target: ${_position.target.latitude.toStringAsFixed(4)},'
-  //                 '${_position.target.longitude.toStringAsFixed(4)}'),
-  //             Text('camera zoom: ${_position.zoom}'),
-  //             Text('camera tilt: ${_position.tilt}'),
-  //             Text(_isMoving ? '(Camera moving)' : '(Camera idle)'),
-  //             _compassToggler(),
-  //             _myLocationTrackingModeCycler(),
-  //             _latLngBoundsToggler(),
-  //             _setStyleToSatellite(),
-  //             _zoomBoundsToggler(),
-  //             _rotateToggler(),
-  //             _scrollToggler(),
-  //             _tiltToggler(),
-  //             _zoomToggler(),
-  //             _myLocationToggler(),
-  //           ],
-  //         ),
-  //       ),
-  //     );
-  //   }
-  //   return Column(
-  //     mainAxisAlignment: MainAxisAlignment.start,
-  //     crossAxisAlignment: CrossAxisAlignment.stretch,
-  //     children: columnChildren,
-  //   );
-  // }
+          return Container();
 
-  // void onMapCreated(MapboxMapController controller) {
-  //   mapController = controller;
-  //   mapController.addListener(_onMapChanged);
-  //   _extractMapInfo();
-  //   setState(() {});
-  // }
+          // snapshot.data.forEach((k,v)
+          // {
+          //   _mapController.addSymbol(SymbolOptions(
+          //     provider.
+          //   ));
+
+          // }
+          // );
+
+        }
+        else
+        {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+
+  }
+
+  void _addSymbol(BomberosModel item) {
+    try
+    {
+      _mapController.addSymbol(
+      SymbolOptions(
+        geometry: LatLng(item.latitude,item.longitude),
+        iconImage: 'assets/custom-icon.png'
+        // iconImage: "airport-15"
+      ),
+    );
+    }
+    catch (e)
+    {
+      print(e.toString());
+    }
+  }
+
+  void _addCircle(CarabinerosModel item)
+  {
+    _mapController.addCircle(
+      CircleOptions(
+        geometry: LatLng(item.latitude,item.longitude),
+        circleColor: "#FF0000",
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _mapController.dispose();
+    super.dispose();
+  }
 }

@@ -5,6 +5,7 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget 
 {
+  //TODO: Controlar cuando se deniegue acceso a gps
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
