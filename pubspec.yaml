@@ -17,6 +17,7 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
+  latlong: ^0.6.1
   location: ^2.3.5
   mapbox_gl:
   flutter_map:
@@ -45,8 +46,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - data/
+    - assets/custom-icon.png
     - assets/
+    - data/
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
