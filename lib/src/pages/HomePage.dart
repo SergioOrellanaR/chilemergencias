@@ -44,9 +44,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   FloatingActionButton _centerGpsCamera() {
-    return FloatingActionButton(onPressed: () async {
+    return FloatingActionButton(
+      onPressed: () async {
       await _mapController.moveCamera(CameraUpdate.newLatLng(_myPosition));
-    });
+    },
+    child: Icon(Icons.gps_fixed),
+    
+    
+    );
   }
 
   //Despues descubri que el mismo MapBoxMap me permite centrar la ubicación XD
@@ -93,11 +98,11 @@ class _HomePageState extends State<HomePage> {
         if (snapshot.hasData && _mapController != null)
         {
           for (BomberosModel item in provider.bomberos) {
-            _addSymbol(item);
+            _addSymbol("fire-station-15", LatLng(item.latitude, item.longitude));
           }
 
           for (CarabinerosModel item in provider.carabineros) {
-            _addCircle(item);
+            _addSymbol("police-15", LatLng(item.latitude, item.longitude));
           }
 
 
@@ -122,29 +127,25 @@ class _HomePageState extends State<HomePage> {
 
   }
 
-  void _addSymbol(BomberosModel item) {
-    try
-    {
-      _mapController.addSymbol(
-      SymbolOptions(
-        geometry: LatLng(item.latitude,item.longitude),
-        iconImage: 'assets/custom-icon.png'
-        // iconImage: "airport-15"
-      ),
-    );
-    }
-    catch (e)
-    {
-      print(e.toString());
-    }
-  }
-
   void _addCircle(CarabinerosModel item)
   {
+
     _mapController.addCircle(
       CircleOptions(
         geometry: LatLng(item.latitude,item.longitude),
         circleColor: "#FF0000",
+      ),
+    );
+  }
+
+  void _addSymbol(String iconImage, LatLng latLng) {
+    _mapController.addSymbol(
+      SymbolOptions(
+        geometry: latLng,
+        iconImage: iconImage,
+        iconColor: "#FF0000",
+        iconHaloColor: "#FF0000"
+        
       ),
     );
   }
