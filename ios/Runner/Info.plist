@@ -9,7 +9,7 @@
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
 	<key>MGLMapboxAccessToken</key>
-	<string>pk.eyJ1IjoiemVyb2NsIiwiYSI6ImNrNHU4MHFibzAwMTQzbG9wZHJ3cDN0YTcifQ.RV96c-fmS-zjMjg0v_vzQA</string>
+	<string>key</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>

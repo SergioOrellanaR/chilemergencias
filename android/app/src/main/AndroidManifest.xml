@@ -12,7 +12,7 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="chilemergencias"
         android:icon="@mipmap/ic_launcher">
-        <meta-data android:name="com.mapbox.token" android:value="pk.eyJ1IjoiemVyb2NsIiwiYSI6ImNrNGhsMnMxeTEwbHYza21sOGNheGxoeXgifQ.Pd91Xjv6_01r8t6lB_Ru7A" />
+        <meta-data android:name="com.mapbox.token" android:value="key" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
