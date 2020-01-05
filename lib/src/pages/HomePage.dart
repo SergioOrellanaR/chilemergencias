@@ -46,10 +46,27 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             mapWithStreaming(),
             _filterButtons(),
-            _getClosestButtons()
+            _goToClosest()
           ],
         ),
         floatingActionButton: _centerGpsCamera());
+  }
+
+  Column _goToClosest() {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Container(),
+        ),
+        Container(
+          child: _getClosestButtons(),
+          height: 90.0,
+          width: 250.0,
+          decoration: ShapeDecoration(
+              shape: StadiumBorder(), color: Color.fromRGBO(80, 154, 195, 0.5)),
+        ),
+      ],
+    );
   }
 
   FloatingActionButton _centerGpsCamera() {
@@ -210,6 +227,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _filterButtons() {
+    TextStyle textStyle = TextStyle(
+        color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0);
+
     FloatingActionButton filterUrgencias = new FloatingActionButton(
       child: Image(
         image: AssetImage("assets/urgencias_Chile.png"),
@@ -265,6 +285,8 @@ class _HomePageState extends State<HomePage> {
 
     return Column(
       children: <Widget>[
+        Text("Filtrar:", style: textStyle,),
+        SizedBox(height: 8.0,),
         filterUrgencias,
         SizedBox(
           height: 10.0,
@@ -284,7 +306,8 @@ class _HomePageState extends State<HomePage> {
     int idElementIndex = 0;
     int distanceIndex = 1;
     dynamic closestInformation;
-    TextStyle textStyle = TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18.0);
+    TextStyle textStyle = TextStyle(
+        color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0);
 
     FloatingActionButton closestUrgencias = new FloatingActionButton(
       child: Image(
@@ -295,11 +318,11 @@ class _HomePageState extends State<HomePage> {
       onPressed: () {
         closestInformation = getClosestUrgenciaId();
         if (closestInformation != null) {
-            String closestId = closestInformation[idElementIndex];
-            UrgenciasModel closestUrgencia = _allData[closestId];
-            _mapController.moveCamera(CameraUpdate.newLatLng(
-                LatLng(closestUrgencia.latitude, closestUrgencia.longitude)));
-          }
+          String closestId = closestInformation[idElementIndex];
+          UrgenciasModel closestUrgencia = _allData[closestId];
+          _mapController.moveCamera(CameraUpdate.newLatLng(
+              LatLng(closestUrgencia.latitude, closestUrgencia.longitude)));
+        }
       },
       backgroundColor: _showFilterUrgenciasButtonColor,
     );
@@ -328,17 +351,18 @@ class _HomePageState extends State<HomePage> {
           if (closestInformation != null) {
             String closestId = closestInformation[idElementIndex];
             CarabinerosModel closestCarabinero = _allData[closestId];
-            _mapController.moveCamera(CameraUpdate.newLatLng(
-                LatLng(closestCarabinero.latitude, closestCarabinero.longitude)));
+            _mapController.moveCamera(CameraUpdate.newLatLng(LatLng(
+                closestCarabinero.latitude, closestCarabinero.longitude)));
           }
         },
         backgroundColor: _showFilterCarabinerosButtonColor);
 
-    
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        Text("Buscar mas cercano", style: textStyle,),
+        Text(
+          "Ir a mas cercano",
+          style: textStyle,
+        ),
         Row(
           children: <Widget>[
             closestUrgencias,
@@ -352,9 +376,6 @@ class _HomePageState extends State<HomePage> {
             closestCarabineros
           ],
           mainAxisAlignment: MainAxisAlignment.center,
-        ),
-        SizedBox(
-          height: 20.0,
         )
       ],
     );
