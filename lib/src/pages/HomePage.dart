@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:ffi';
-
 import 'package:chilemergencias/src/controllers/SymbolController.dart';
 import 'package:chilemergencias/src/models/BomberosModel.dart';
 import 'package:chilemergencias/src/models/CarabinerosModel.dart';
 import 'package:chilemergencias/src/models/UrgenciasModel.dart';
 import 'package:chilemergencias/src/providers/Provider.dart';
-import 'package:chilemergencias/utils/private.dart' as privateInfo;
+import 'package:chilemergencias/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong/latlong.dart' as latlong;
 import 'package:location/location.dart';
@@ -43,13 +41,27 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         // appBar: AppBar(title: Text("Hi")),
         body: Stack(
-          children: <Widget>[
-            mapWithStreaming(),
-            _filterButtons(),
-            _goToClosest()
-          ],
+          children: <Widget>[mapWithStreaming(), _filtering(), _goToClosest()],
         ),
         floatingActionButton: _centerGpsCamera());
+  }
+
+  Row _filtering() {
+    return Row(
+      children: <Widget>[
+        Container(
+          child: _filterButtons(),
+          height: 250.0,
+          width: 70.0,
+          decoration: ShapeDecoration(
+              shape: StadiumBorder(), color: Color.fromRGBO(80, 154, 195, 0.5)),
+        ),
+        Expanded(
+          child: Container(),
+        ),
+      ],
+      crossAxisAlignment: CrossAxisAlignment.center,
+    );
   }
 
   Column _goToClosest() {
@@ -141,23 +153,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _addCircle(CarabinerosModel item) {
-    _mapController.addCircle(
-      CircleOptions(
-        geometry: LatLng(item.latitude, item.longitude),
-        circleColor: "#FF0000",
-      ),
-    );
-  }
-
   Future<Symbol> _addSymbol(String iconImage, LatLng latLng) async {
     return _mapController.addSymbol(
       SymbolOptions(geometry: latLng, iconImage: iconImage),
     );
-  }
-
-  Future<void> _removeSymbol(Symbol symbol) async {
-    return _mapController.removeSymbol(symbol);
   }
 
   void _addMarkers(String institution) async {
@@ -206,7 +205,7 @@ class _HomePageState extends State<HomePage> {
         break;
       case "Carabineros":
         for (Symbol item in _symbolController.carabinerosSymbols)
-          await _removeSymbol(item);
+          symbolIds.add(item.id);
         _symbolController.carabinerosSymbols = new List<Symbol>();
         break;
       default:
@@ -226,9 +225,13 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  //TODO: Refactorizar código para que quede mas ordenado.
   Widget _filterButtons() {
     TextStyle textStyle = TextStyle(
-        color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0);
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 18.0,
+        fontStyle: FontStyle.italic);
 
     FloatingActionButton filterUrgencias = new FloatingActionButton(
       child: Image(
@@ -241,7 +244,7 @@ class _HomePageState extends State<HomePage> {
           _symbolController.showUrgencias = !_symbolController.showUrgencias;
           (_symbolController.showUrgencias)
               ? _showFilterUrgenciasButtonColor = Colors.white54
-              : _showFilterUrgenciasButtonColor = Colors.grey;
+              : _showFilterUrgenciasButtonColor = Color.fromRGBO(189, 0, 26, 1);
           (_symbolController.showUrgencias)
               ? _addMarkers("Urgencias")
               : _deleteMarkers("Urgencias");
@@ -259,7 +262,8 @@ class _HomePageState extends State<HomePage> {
             _symbolController.showBomberos = !_symbolController.showBomberos;
             (_symbolController.showBomberos)
                 ? _showFilterBomberosButtonColor = Colors.white54
-                : _showFilterBomberosButtonColor = Colors.grey;
+                : _showFilterBomberosButtonColor =
+                    Color.fromRGBO(189, 0, 26, 1);
             (_symbolController.showBomberos)
                 ? _addMarkers("Bomberos")
                 : _deleteMarkers("Bomberos");
@@ -272,21 +276,32 @@ class _HomePageState extends State<HomePage> {
           image: AssetImage("assets/carabineros_Chile.png"),
         ),
         onPressed: () {
-          _symbolController.showCarabineros =
-              !_symbolController.showCarabineros;
-          (_symbolController.showCarabineros)
-              ? _showFilterCarabinerosButtonColor = Colors.white54
-              : _showFilterCarabinerosButtonColor = Colors.grey;
-          (_symbolController.showCarabineros)
-              ? _addMarkers("Carabineros")
-              : _deleteMarkers("Carabineros");
+          setState(() {
+            _symbolController.showCarabineros =
+                !_symbolController.showCarabineros;
+            (_symbolController.showCarabineros)
+                ? _showFilterCarabinerosButtonColor = Colors.white54
+                : _showFilterCarabinerosButtonColor =
+                    Color.fromRGBO(189, 0, 26, 1);
+            (_symbolController.showCarabineros)
+                ? _addMarkers("Carabineros")
+                : _deleteMarkers("Carabineros");
+          });
         },
         backgroundColor: _showFilterCarabinerosButtonColor);
 
     return Column(
       children: <Widget>[
-        Text("Filtrar:", style: textStyle,),
-        SizedBox(height: 8.0,),
+        SizedBox(
+          height: 15.0,
+        ),
+        Text(
+          "Filtrar:",
+          style: textStyle,
+        ),
+        SizedBox(
+          height: 8.0,
+        ),
         filterUrgencias,
         SizedBox(
           height: 10.0,
@@ -297,17 +312,18 @@ class _HomePageState extends State<HomePage> {
         ),
         filterCarabineros
       ],
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
     );
   }
 
+  //TODO: Refactorizar codigo para que sea mas corto.
   Widget _getClosestButtons() {
     int idElementIndex = 0;
-    int distanceIndex = 1;
     dynamic closestInformation;
     TextStyle textStyle = TextStyle(
-        color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0);
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 18.0,
+        fontStyle: FontStyle.italic);
 
     FloatingActionButton closestUrgencias = new FloatingActionButton(
       child: Image(
@@ -315,15 +331,12 @@ class _HomePageState extends State<HomePage> {
         height: 45.0,
         width: 45.0,
       ),
-      onPressed: () {
-        closestInformation = getClosestUrgenciaId();
-        if (closestInformation != null) {
-          String closestId = closestInformation[idElementIndex];
-          UrgenciasModel closestUrgencia = _allData[closestId];
-          _mapController.moveCamera(CameraUpdate.newLatLng(
-              LatLng(closestUrgencia.latitude, closestUrgencia.longitude)));
-        }
-      },
+      onPressed: (_symbolController.showUrgencias)
+          ? () {
+              closestInformation =
+                  _goToClosestUrgencias(closestInformation, idElementIndex);
+            }
+          : null,
       backgroundColor: _showFilterUrgenciasButtonColor,
     );
 
@@ -331,30 +344,23 @@ class _HomePageState extends State<HomePage> {
         child: Image(
           image: AssetImage("assets/Bomberos_Chile.png"),
         ),
-        onPressed: () {
-          closestInformation = getClosestBomberoId();
-          if (closestInformation != null) {
-            String closestId = getClosestBomberoId()[idElementIndex];
-            BomberosModel closestBombero = _allData[closestId];
-            _mapController.moveCamera(CameraUpdate.newLatLng(
-                LatLng(closestBombero.latitude, closestBombero.longitude)));
-          }
-        },
+        onPressed: (_symbolController.showBomberos)
+            ? () {
+                closestInformation =
+                    _goToClosestBombero(closestInformation, idElementIndex);
+              }
+            : null,
         backgroundColor: _showFilterBomberosButtonColor);
 
     FloatingActionButton closestCarabineros = new FloatingActionButton(
         child: Image(
           image: AssetImage("assets/carabineros_Chile.png"),
         ),
-        onPressed: () {
-          closestInformation = getClosestCarabineroId();
-          if (closestInformation != null) {
-            String closestId = closestInformation[idElementIndex];
-            CarabinerosModel closestCarabinero = _allData[closestId];
-            _mapController.moveCamera(CameraUpdate.newLatLng(LatLng(
-                closestCarabinero.latitude, closestCarabinero.longitude)));
-          }
-        },
+        onPressed: (_symbolController.showCarabineros)
+            ? () {
+                _goToClosestCarabineros(closestInformation, idElementIndex);
+              }
+            : null,
         backgroundColor: _showFilterCarabinerosButtonColor);
 
     return Column(
@@ -379,6 +385,46 @@ class _HomePageState extends State<HomePage> {
         )
       ],
     );
+  }
+
+  dynamic _goToClosestCarabineros(closestInformation, int idElementIndex) {
+    int distanceIndex = 1;
+    closestInformation = getClosestCarabineroId();
+    if (closestInformation != null) {
+      String closestId = closestInformation[idElementIndex];
+      CarabinerosModel closestCarabinero = _allData[closestId];
+      double zoom = setZoomLevel(num.parse(closestInformation[distanceIndex]));
+      _mapController.moveCamera(CameraUpdate.newLatLngZoom(
+          LatLng(closestCarabinero.latitude, closestCarabinero.longitude),
+          zoom));
+    }
+    return closestInformation;
+  }
+
+  dynamic _goToClosestUrgencias(closestInformation, int idElementIndex) {
+    int distanceIndex = 1;
+    closestInformation = getClosestUrgenciaId();
+    if (closestInformation != null) {
+      String closestId = closestInformation[idElementIndex];
+      UrgenciasModel closestUrgencia = _allData[closestId];
+      double zoom = setZoomLevel(num.parse(closestInformation[distanceIndex]));
+      _mapController.moveCamera(CameraUpdate.newLatLngZoom(
+          LatLng(closestUrgencia.latitude, closestUrgencia.longitude), zoom));
+    }
+    return closestInformation;
+  }
+
+  dynamic _goToClosestBombero(closestInformation, int idElementIndex) {
+    int distanceIndex = 1;
+    closestInformation = getClosestBomberoId();
+    if (closestInformation != null) {
+      String closestId = getClosestBomberoId()[idElementIndex];
+      BomberosModel closestBombero = _allData[closestId];
+      double zoom = setZoomLevel(num.parse(closestInformation[distanceIndex]));
+      _mapController.moveCamera(CameraUpdate.newLatLngZoom(
+          LatLng(closestBombero.latitude, closestBombero.longitude), zoom));
+    }
+    return closestInformation;
   }
 
   @override
