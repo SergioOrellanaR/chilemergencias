@@ -93,8 +93,9 @@ class _Provider
     for (var item in dataMap) {
 
       CarabinerosModel carabinero = CarabinerosModel.fromJson(item);
-      carabinerosList.add(carabinero);
-      
+
+      if(!carabinero.isRural)
+        carabinerosList.add(carabinero);      
     }
 
     return carabinerosList;

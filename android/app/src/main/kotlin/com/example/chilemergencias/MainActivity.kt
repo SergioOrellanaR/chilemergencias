@@ -1,4 +1,4 @@
-package com.example.chilemergencias
+package com.serorellanar.chilemergencias
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
