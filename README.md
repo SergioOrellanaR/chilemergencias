@@ -4,4 +4,4 @@ Este proyecto muestra los servicios de urgencia mas cercanos a la ubicación act
 
 # chilemergencias (Eng)
 
-This proyect shows the closest urgency service (Police station, Hospital or Fire station) in Chile, it's actually on development so this software is not reliable yet, also for running you need some json sources that are not commited on this repository, those json contains all the information and location of the different buildings, if you want that information, you cant contact me via PM or email to serorellanar@gmail.com
+This proyect shows the closest urgency service (Police station, Hospital or Fire station) in Chile, it's actually on development so this software is not reliable yet, also for running you need some json sources that are not commited on this repository, those json contains all the information and location of the different buildings, if you want that information, you can contact me via PM or email to serorellanar@gmail.com
