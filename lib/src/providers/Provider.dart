@@ -101,6 +101,26 @@ class _Provider
     return carabinerosList;
   }
 
+  returnListByInstitution(String institutionName)
+  {
+    switch (institutionName) {
+      case "Urgen":
+          return urgencias;
+        break;
+      case "Bombe":
+          return bomberos;
+        break;
+      case "Carab":
+          return carabineros;
+        break;
+      default:
+          return [];
+        break;
+    }
+  }
+
+
+
 }
 
 final provider = new _Provider();

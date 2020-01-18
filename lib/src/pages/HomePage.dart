@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:chilemergencias/src/models/Institution.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong/latlong.dart' as latlong;
 import 'package:location/location.dart';
@@ -115,9 +116,9 @@ class _HomePageState extends State<HomePage> {
           (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
         if (snapshot.hasData) {
           //TODO: verificar que future no esté dando problemas por asignación a variable simple.
-          _addMarkers("Urgencias");
-          _addMarkers("Bomberos");
-          _addMarkers("Carabineros");
+          _addMarkers("Urgen");
+          _addMarkers("Bombe");
+          _addMarkers("Carab");
           _allData = snapshot.data;
           _areMarkersDrawed = true;
           return Container();
@@ -136,14 +137,14 @@ class _HomePageState extends State<HomePage> {
 
   void _addMarkers(String institution) async {
     switch (institution) {
-      case "Urgencias":
+      case "Urgen":
         if (_symbolController.urgenciasSymbols.length == 0) {
           for (UrgenciasModel item in provider.urgencias)
             _symbolController.urgenciasSymbols.add(await _addSymbol(
                 "hospital-15", LatLng(item.latitude, item.longitude)));
         }
         break;
-      case "Bomberos":
+      case "Bombe":
         if (_symbolController.bomberosSymbols.length == 0) {
           for (BomberosModel item in provider.bomberos) {
             _symbolController.bomberosSymbols.add(await _addSymbol(
@@ -151,7 +152,7 @@ class _HomePageState extends State<HomePage> {
           }
         }
         break;
-      case "Carabineros":
+      case "Carab":
         if (_symbolController.carabinerosSymbols.length == 0) {
           for (CarabinerosModel item in provider.carabineros)
             _symbolController.carabinerosSymbols.add(await _addSymbol(
@@ -171,9 +172,12 @@ class _HomePageState extends State<HomePage> {
         fontSize: 18.0,
         fontStyle: FontStyle.italic);
 
-    FloatingActionButton closestUrgencias   = _createClosestButton("assets/Urgencias_Chile.png");
-    FloatingActionButton closestBomberos    = _createClosestButton("assets/Bomberos_Chile.png");
-    FloatingActionButton closestCarabineros = _createClosestButton("assets/Carabineros_Chile.png");
+    FloatingActionButton closestUrgencias =
+        _createClosestButton("assets/Urgencias_Chile.png");
+    FloatingActionButton closestBomberos =
+        _createClosestButton("assets/Bomberos_Chile.png");
+    FloatingActionButton closestCarabineros =
+        _createClosestButton("assets/Carabineros_Chile.png");
 
     return Column(
       children: <Widget>[
@@ -208,126 +212,38 @@ class _HomePageState extends State<HomePage> {
         width: 45.0,
       ),
       onPressed: () {
-            _goToClosestInstitution(institutionName);
+        _goToClosestBuilding(institutionName);
       },
       backgroundColor: Colors.white,
     );
   }
 
-  _goToClosestInstitution(String institutionName) {
-    switch (institutionName) {
-      case "Urgen":
-        _goToClosestUrgencias();
-        break;
-      case "Bombe":
-        _goToClosestBombero();
-        break;
-      default:
-        _goToClosestCarabineros();
-        break;
-    }
-  }
-
-  void _goToClosestCarabineros() {
+  void _goToClosestBuilding(String institutionName) {
     int idElementIndex = 0;
     int distanceIndex = 1;
-    closestInformation = getClosestCarabineroId();
+    closestInformation = _getClosestInformation(institutionName);
     if (closestInformation != null) {
       String closestId = closestInformation[idElementIndex];
-      CarabinerosModel closestCarabinero = _allData[closestId];
+      Institution closestInstitution = _allData[closestId];
       double zoom = setZoomLevel(num.parse(closestInformation[distanceIndex]));
       _mapController.moveCamera(CameraUpdate.newLatLngZoom(
-          LatLng(closestCarabinero.latitude, closestCarabinero.longitude),
+          LatLng(closestInstitution.latitude, closestInstitution.longitude),
           zoom));
     }
   }
 
-  void _goToClosestUrgencias() {
-    int idElementIndex = 0;
-    int distanceIndex = 1;
-    closestInformation = getClosestUrgenciaId();
-    if (closestInformation != null) {
-      String closestId = closestInformation[idElementIndex];
-      UrgenciasModel closestUrgencia = _allData[closestId];
-      double zoom = setZoomLevel(num.parse(closestInformation[distanceIndex]));
-      _mapController.moveCamera(CameraUpdate.newLatLngZoom(
-          LatLng(closestUrgencia.latitude, closestUrgencia.longitude), zoom));
-    }
-  }
-
-  void _goToClosestBombero() {
-    int idElementIndex = 0;
-    int distanceIndex = 1;
-    closestInformation = getClosestBomberoId();
-    if (closestInformation != null) {
-      String closestId = getClosestBomberoId()[idElementIndex];
-      BomberosModel closestBombero = _allData[closestId];
-      double zoom = setZoomLevel(num.parse(closestInformation[distanceIndex]));
-      _mapController.moveCamera(CameraUpdate.newLatLngZoom(
-          LatLng(closestBombero.latitude, closestBombero.longitude), zoom));
-    }
-  }
-
-  @override
-  void dispose() {
-    _mapController.dispose();
-    super.dispose();
-  }
-
-  getClosestBomberoId() {
+  _getClosestInformation(String institutionName) {
     final latlong.Distance distance = new latlong.Distance();
     latlong.LatLng mypos =
         latlong.LatLng(_myPosition.latitude, _myPosition.longitude);
     num minorDistance;
     int closestId;
+    List<Institution> servicesList =
+        provider.returnListByInstitution(institutionName);
 
-    for (int i = 0; i < provider.bomberos.length; i++) {
-      latlong.LatLng objectPosition = latlong.LatLng(
-          provider.bomberos[i].latitude, provider.bomberos[i].longitude);
-      num distanceBetween = distance.distance(mypos, objectPosition);
-
-      if (minorDistance == null || distanceBetween < minorDistance) {
-        minorDistance = distanceBetween;
-        closestId = i;
-      }
-    }
-    return (closestId != null)
-        ? [closestId.toString() + "_Bombe", minorDistance.toString()]
-        : null;
-  }
-
-  getClosestUrgenciaId() {
-    final latlong.Distance distance = new latlong.Distance();
-    latlong.LatLng mypos =
-        latlong.LatLng(_myPosition.latitude, _myPosition.longitude);
-    num minorDistance;
-    int closestId;
-
-    for (int i = 0; i < provider.urgencias.length; i++) {
-      latlong.LatLng objectPosition = latlong.LatLng(
-          provider.urgencias[i].latitude, provider.urgencias[i].longitude);
-      num distanceBetween = distance.distance(mypos, objectPosition);
-
-      if (minorDistance == null || distanceBetween < minorDistance) {
-        minorDistance = distanceBetween;
-        closestId = i;
-      }
-    }
-    return (closestId != null)
-        ? [closestId.toString() + "_Urgen", minorDistance.toString()]
-        : null;
-  }
-
-  getClosestCarabineroId() {
-    final latlong.Distance distance = new latlong.Distance();
-    latlong.LatLng mypos =
-        latlong.LatLng(_myPosition.latitude, _myPosition.longitude);
-    num minorDistance;
-    int closestId;
-
-    for (int i = 0; i < provider.carabineros.length; i++) {
-      latlong.LatLng objectPosition = latlong.LatLng(
-          provider.carabineros[i].latitude, provider.carabineros[i].longitude);
+    for (int i = 0; i < servicesList.length; i++) {
+      latlong.LatLng objectPosition =
+          latlong.LatLng(servicesList[i].latitude, servicesList[i].longitude);
       num distanceBetween = distance.distance(mypos, objectPosition);
 
       if (minorDistance == null || distanceBetween < minorDistance) {
@@ -337,7 +253,10 @@ class _HomePageState extends State<HomePage> {
     }
 
     return (closestId != null)
-        ? [closestId.toString() + "_Carab", minorDistance.toString()]
+        ? [
+            closestId.toString() + "_" + institutionName,
+            minorDistance.toString()
+          ]
         : null;
   }
 
@@ -350,10 +269,19 @@ class _HomePageState extends State<HomePage> {
       case "assets/Bomberos_Chile.png":
         value = "Bombe";
         break;
-      default:
+      case "assets/Carabineros_Chile.png":
         value = "Carab";
+        break;
+      default:
+        value = null;
         break;
     }
     return value;
+  }
+
+  @override
+  void dispose() {
+    _mapController.dispose();
+    super.dispose();
   }
 }
