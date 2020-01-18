@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'package:chilemergencias/src/models/Institution.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong/latlong.dart' as latlong;
 import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
-import 'package:chilemergencias/src/controllers/SymbolController.dart';
-import 'package:chilemergencias/src/models/BomberosModel.dart';
-import 'package:chilemergencias/src/models/CarabinerosModel.dart';
-import 'package:chilemergencias/src/models/UrgenciasModel.dart';
+import 'package:chilemergencias/src/models/Institution.dart';
 import 'package:chilemergencias/src/providers/Provider.dart';
 import 'package:chilemergencias/utils/utils.dart';
 
@@ -19,7 +15,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _areMarkersDrawed = false;
-  SymbolController _symbolController;
   LatLng _myPosition;
   MapboxMapController _mapController;
   MapboxMap _mapBoxMap;
@@ -31,7 +26,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _myPosition = new LatLng(0, 0);
     _createMapBoxMap();
-    _symbolController = new SymbolController();
   }
 
   @override
@@ -135,33 +129,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _addMarkers(String institution) async {
-    switch (institution) {
-      case "Urgen":
-        if (_symbolController.urgenciasSymbols.length == 0) {
-          for (UrgenciasModel item in provider.urgencias)
-            _symbolController.urgenciasSymbols.add(await _addSymbol(
-                "hospital-15", LatLng(item.latitude, item.longitude)));
-        }
-        break;
-      case "Bombe":
-        if (_symbolController.bomberosSymbols.length == 0) {
-          for (BomberosModel item in provider.bomberos) {
-            _symbolController.bomberosSymbols.add(await _addSymbol(
-                "fire-station-15", LatLng(item.latitude, item.longitude)));
-          }
-        }
-        break;
-      case "Carab":
-        if (_symbolController.carabinerosSymbols.length == 0) {
-          for (CarabinerosModel item in provider.carabineros)
-            _symbolController.carabinerosSymbols.add(await _addSymbol(
-                "police-15", LatLng(item.latitude, item.longitude)));
-        }
-        break;
-      default:
-        throw new Exception("Opción inválida");
-        break;
+  void _addMarkers(String institutionName) async {
+    List<Institution> institutionList =
+        provider.listByInstitution(institutionName);
+    String iconImage = _iconByInstitution(institutionName);
+
+    for (Institution item in institutionList) {
+      await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
     }
   }
 
@@ -204,7 +178,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   FloatingActionButton _createClosestButton(String assetImage) {
-    String institutionName = _getInstitutionNameByAssetImage(assetImage);
+    String institutionName = _institutionNameByAssetImage(assetImage);
     return FloatingActionButton(
       child: Image(
         image: AssetImage(assetImage),
@@ -239,7 +213,7 @@ class _HomePageState extends State<HomePage> {
     num minorDistance;
     int closestId;
     List<Institution> servicesList =
-        provider.returnListByInstitution(institutionName);
+        provider.listByInstitution(institutionName);
 
     for (int i = 0; i < servicesList.length; i++) {
       latlong.LatLng objectPosition =
@@ -260,7 +234,7 @@ class _HomePageState extends State<HomePage> {
         : null;
   }
 
-  String _getInstitutionNameByAssetImage(String assetImage) {
+  String _institutionNameByAssetImage(String assetImage) {
     String value;
     switch (assetImage) {
       case "assets/Urgencias_Chile.png":
@@ -279,9 +253,30 @@ class _HomePageState extends State<HomePage> {
     return value;
   }
 
+  String _iconByInstitution(String institutionName) {
+    String value;
+    switch (institutionName) {
+      case "Urgen":
+        value = "hospital-15";
+        break;
+      case "Bombe":
+        value = "fire-station-15";
+        break;
+      case "Carab":
+        value = "police-15";
+        break;
+      default:
+        value = null;
+        break;
+    }
+    return value;
+  }
+
   @override
   void dispose() {
     _mapController.dispose();
     super.dispose();
   }
+
+  
 }

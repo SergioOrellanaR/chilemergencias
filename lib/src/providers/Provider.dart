@@ -101,7 +101,7 @@ class _Provider
     return carabinerosList;
   }
 
-  returnListByInstitution(String institutionName)
+  listByInstitution(String institutionName)
   {
     switch (institutionName) {
       case "Urgen":
@@ -118,9 +118,6 @@ class _Provider
         break;
     }
   }
-
-
-
 }
 
 final provider = new _Provider();
