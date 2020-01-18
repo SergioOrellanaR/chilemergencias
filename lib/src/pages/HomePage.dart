@@ -164,7 +164,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  //TODO: Refactorizar codigo para que sea mas corto.
   Widget _getClosestButtons() {
     TextStyle textStyle = TextStyle(
         color: Colors.black,
