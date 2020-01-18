@@ -1,16 +1,7 @@
 # chilemergencias
 
-A new Flutter project.
+Este proyecto muestra los servicios de urgencia mas cercanos a la ubicación actual dentro de Chile, si usted descarga este proyecto, no funcionará dado que necesita los Json con el datasource, si usted los necesita, puede contactarme en privado o bien al email serorellanar@gmail.com.
 
-## Getting Started
+# chilemergencias (Eng)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This proyect shows the closest urgency service (Police station, Hospital or Fire station) in Chile, it's actually on development so this software is not reliable yet, also for running you need some json sources that are not commited on this repository, those json contains all the information and location of the different buildings, if you want that information, you can contact me via PM or email to serorellanar@gmail.com
