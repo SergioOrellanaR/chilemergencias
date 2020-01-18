@@ -35,7 +35,8 @@ class _HomePageState extends State<HomePage> {
         body: Stack(
           children: <Widget>[mapWithStreaming(), _goToClosest()],
         ),
-        floatingActionButton: _centerGpsCamera());
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        floatingActionButton: _createOperationButtons());
   }
 
   Column _goToClosest() {
@@ -55,10 +56,47 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _createOperationButtons() {
+    FloatingActionButton zoomIn = new FloatingActionButton(
+      child: Icon(Icons.zoom_in),
+      onPressed: () {
+        _mapController.animateCamera(CameraUpdate.zoomIn());
+      },
+    );
+
+    FloatingActionButton zoomOut = new FloatingActionButton(
+      child: Icon(Icons.zoom_out),
+      onPressed: () {
+        _mapController.animateCamera(CameraUpdate.zoomOut());
+        
+      },
+    );
+
+    return Row(
+      children: <Widget>[
+        Expanded(child: SizedBox()),
+        Column(
+          children: <Widget>[
+            SizedBox(
+              height: 130.0,
+            ),
+            zoomIn,
+            SizedBox(
+              height: 10.0,
+            ),
+            zoomOut,
+            Expanded(child: SizedBox()),
+            _centerGpsCamera(),
+          ],
+        ),
+      ],
+    );
+  }
+
   FloatingActionButton _centerGpsCamera() {
     return FloatingActionButton(
       onPressed: () async {
-        await _mapController.moveCamera(CameraUpdate.newLatLng(_myPosition));
+        await _mapController.animateCamera(CameraUpdate.newLatLngZoom(_myPosition, 14.0));
       },
       child: Icon(Icons.gps_fixed),
     );
@@ -199,7 +237,8 @@ class _HomePageState extends State<HomePage> {
     if (closestInformation != null) {
       String closestId = closestInformation[idElementIndex];
       Institution closestInstitution = _allData[closestId];
-      double zoom = utils.setZoomLevel(num.parse(closestInformation[distanceIndex]));
+      double zoom =
+          utils.setZoomLevel(num.parse(closestInformation[distanceIndex]));
       _mapController.moveCamera(CameraUpdate.newLatLngZoom(
           LatLng(closestInstitution.latitude, closestInstitution.longitude),
           zoom));
@@ -258,6 +297,4 @@ class _HomePageState extends State<HomePage> {
     _mapController.dispose();
     super.dispose();
   }
-
-  
 }
