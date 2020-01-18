@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:chilemergencias/src/models/BomberosModel.dart';
 import 'package:chilemergencias/src/models/CarabinerosModel.dart';
+import 'package:chilemergencias/src/models/Institution.dart';
 import 'package:chilemergencias/src/models/UrgenciasModel.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -16,11 +17,11 @@ class _Provider
     //loadData();
   }
 
-  Future<Map<String, dynamic>> allDataToMap() async
+  Future<Map<String, Institution>> allDataToMap() async
   {
     await initData();
 
-    Map<String,dynamic> allData = new Map();
+    Map<String,Institution> allData = new Map();
 
     for(int i=0; i < urgencias.length ; i++)
     {

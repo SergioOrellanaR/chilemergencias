@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong/latlong.dart' as latlong;
 import 'package:location/location.dart';
@@ -19,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   MapboxMapController _mapController;
   MapboxMap _mapBoxMap;
   Map<String, dynamic> _allData;
+  List<String> _closestThreeOfEachInstitutionId;
   dynamic closestInformation;
 
   @override
@@ -68,7 +70,6 @@ class _HomePageState extends State<HomePage> {
       child: Icon(Icons.zoom_out),
       onPressed: () {
         _mapController.animateCamera(CameraUpdate.zoomOut());
-        
       },
     );
 
@@ -96,7 +97,8 @@ class _HomePageState extends State<HomePage> {
   FloatingActionButton _centerGpsCamera() {
     return FloatingActionButton(
       onPressed: () async {
-        await _mapController.animateCamera(CameraUpdate.newLatLngZoom(_myPosition, 14.0));
+        await _mapController
+            .animateCamera(CameraUpdate.newLatLngZoom(_myPosition, 14.0));
       },
       child: Icon(Icons.gps_fixed),
     );
@@ -111,10 +113,22 @@ class _HomePageState extends State<HomePage> {
         if (snapshot.hasData) {
           Widget widget = Container();
           _myPosition = LatLng(snapshot.data.latitude, snapshot.data.longitude);
+          //Verificar performance y uso de bateria de actualización en tiempo real de instituciones cercanas.
 
           if (_mapController != null && _areMarkersDrawed == false) {
             widget = drawInstitutionsOnMap();
+          } else if (_mapController != null && _areMarkersDrawed) {
+            _setDistanceBetweenPositionAndInstitutions();
+            List<String> topThree = _loadClosestThreeOfEach();
+
+            if (!listEquals(topThree, _closestThreeOfEachInstitutionId)) {
+              _closestThreeOfEachInstitutionId = topThree;
+              _clearMarkers();
+              _addMarkers();
+            }
           }
+
+          //_setDistanceBetweenPositionAndInstitutions();
           return Stack(
             children: <Widget>[_mapBoxMap, widget],
           );
@@ -148,11 +162,14 @@ class _HomePageState extends State<HomePage> {
           (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
         if (snapshot.hasData) {
           //TODO: verificar que future no esté dando problemas por asignación a variable simple.
-          _addMarkers("Urgen");
-          _addMarkers("Bombe");
-          _addMarkers("Carab");
           _allData = snapshot.data;
-          _areMarkersDrawed = true;
+          _setDistanceBetweenPositionAndInstitutions();
+          _closestThreeOfEachInstitutionId = _loadClosestThreeOfEach();
+          if (_closestThreeOfEachInstitutionId != null) {
+            _addMarkers();
+            _areMarkersDrawed = true;
+          }
+
           return Container();
         } else {
           return Center(child: CircularProgressIndicator());
@@ -167,15 +184,27 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _addMarkers(String institutionName) async {
-    List<Institution> institutionList =
-        provider.listByInstitution(institutionName);
-    String iconImage = utils.iconByInstitution(institutionName);
-
-    for (Institution item in institutionList) {
+  void _addMarkers() async {
+    for (String id in _closestThreeOfEachInstitutionId) {
+      Institution item = _allData[id];
+      String iconImage = utils.iconByInstitution(id.substring(id.length - 5));
       await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
     }
   }
+
+  void _clearMarkers() async {
+    await _mapController.clearSymbols();
+  }
+
+  // void _addMarkers(String institutionName) async {
+  //   List<Institution> institutionList =
+  //       provider.listByInstitution(institutionName);
+  //   String iconImage = utils.iconByInstitution(institutionName);
+
+  //   for (Institution item in institutionList) {
+  //     await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
+  //   }
+  // }
 
   Widget _getClosestButtons() {
     TextStyle textStyle = TextStyle(
@@ -245,6 +274,16 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _setDistanceBetweenPositionAndInstitutions() {
+    if (_allData != null) {
+      _allData.forEach((key, value) {
+        Institution inst = value;
+        inst.calculateMetersFromActualPosition(_myPosition);
+        value = inst;
+      });
+    }
+  }
+
   _getClosestInformation(String institutionName) {
     final latlong.Distance distance = new latlong.Distance();
     latlong.LatLng mypos =
@@ -290,6 +329,25 @@ class _HomePageState extends State<HomePage> {
         break;
     }
     return value;
+  }
+
+  _loadClosestThreeOfEach() {
+    List<String> sortedKeys = _allData.keys.toList(growable: false)
+      ..sort((k1, k2) => _allData[k1]
+          .metersFromActualPosition
+          .compareTo(_allData[k2].metersFromActualPosition));
+
+    return _topThreeByInstitution(sortedKeys, "Urgen") +
+        _topThreeByInstitution(sortedKeys, "Bombe") +
+        _topThreeByInstitution(sortedKeys, "Carab");
+  }
+
+  List<String> _topThreeByInstitution(
+      List<String> sortedKeys, String institutionName) {
+    List<String> topThree = sortedKeys
+        .where((value) => value.substring(value.length - 5) == institutionName)
+        .toList();
+    return [topThree[0], topThree[1], topThree[2]];
   }
 
   @override
