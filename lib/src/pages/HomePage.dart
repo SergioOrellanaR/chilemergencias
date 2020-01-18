@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
 
   void _createMapBoxMap() {
     _mapBoxMap = MapboxMap(
-        initialCameraPosition: CameraPosition(target: _myPosition, zoom: 10),
+        initialCameraPosition: CameraPosition(target: _myPosition, zoom: 14),
         myLocationEnabled: true,
         onMapCreated: (controller) {
           _mapController = controller;
