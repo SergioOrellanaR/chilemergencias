@@ -5,7 +5,7 @@ import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:chilemergencias/src/models/Institution.dart';
 import 'package:chilemergencias/src/providers/Provider.dart';
-import 'package:chilemergencias/utils/utils.dart';
+import 'package:chilemergencias/utils/utils.dart' as utils;
 
 class HomePage extends StatefulWidget {
   @override
@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
   void _addMarkers(String institutionName) async {
     List<Institution> institutionList =
         provider.listByInstitution(institutionName);
-    String iconImage = _iconByInstitution(institutionName);
+    String iconImage = utils.iconByInstitution(institutionName);
 
     for (Institution item in institutionList) {
       await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> {
     if (closestInformation != null) {
       String closestId = closestInformation[idElementIndex];
       Institution closestInstitution = _allData[closestId];
-      double zoom = setZoomLevel(num.parse(closestInformation[distanceIndex]));
+      double zoom = utils.setZoomLevel(num.parse(closestInformation[distanceIndex]));
       _mapController.moveCamera(CameraUpdate.newLatLngZoom(
           LatLng(closestInstitution.latitude, closestInstitution.longitude),
           zoom));
@@ -245,25 +245,6 @@ class _HomePageState extends State<HomePage> {
         break;
       case "assets/Carabineros_Chile.png":
         value = "Carab";
-        break;
-      default:
-        value = null;
-        break;
-    }
-    return value;
-  }
-
-  String _iconByInstitution(String institutionName) {
-    String value;
-    switch (institutionName) {
-      case "Urgen":
-        value = "hospital-15";
-        break;
-      case "Bombe":
-        value = "fire-station-15";
-        break;
-      case "Carab":
-        value = "police-15";
         break;
       default:
         value = null;
