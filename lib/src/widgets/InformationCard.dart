@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:chilemergencias/utils/utils.dart' as utils;
+import 'package:chilemergencias/utils/globals.dart' as globals;
 
-class InformationCard extends StatelessWidget {
+
+class InformationCard extends StatefulWidget {
 
   final String name;
   final String address;
@@ -10,11 +12,16 @@ class InformationCard extends StatelessWidget {
   final String institutionCode;
 
   InformationCard({@required this.name, @required this.address, this.phone, @required this.commune, @required this.institutionCode});  
-  
-  
+
+  @override
+  _InformationCardState createState() => _InformationCardState();
+}
+
+class _InformationCardState extends State<InformationCard> {
+
   @override
   Widget build(BuildContext context) {
-    return _buildCard(context);
+    return Visibility(child: _buildCard(context), visible: globals.isInformationCardVisible);
   }
 
   Card _buildCard(BuildContext context) {
@@ -45,7 +52,7 @@ class InformationCard extends StatelessWidget {
   }
 
   Widget _leadingImage() {
-    String assetImage = utils.assetImageOnCardByInstitutionCode(institutionCode);
+    String assetImage = utils.assetImageOnCardByInstitutionCode(widget.institutionCode);
 
     if (assetImage != null)
     {
@@ -63,7 +70,6 @@ class InformationCard extends StatelessWidget {
           color: Colors.blue,
         );
     }
-    
   }
 
   Row _portraitActionButtons() {
@@ -106,9 +112,13 @@ class InformationCard extends StatelessWidget {
   Row _titleRow(BuildContext context) {
     return Row(
       children: <Widget>[
-        Text(name, style: utils.setTitleFontSize(name.length)),
+        Text(widget.name, style: utils.setTitleFontSize(widget.name.length)),
         Expanded(child: SizedBox()),
-        GestureDetector( onTap: () => Navigator.of(context).pop(), child: Icon(
+        GestureDetector( onTap: () {
+          setState(() {
+            globals.isInformationCardVisible = false;
+          });
+        }, child: Icon(
               Icons.close,
               size: 20.0,
             ))
@@ -120,7 +130,7 @@ class InformationCard extends StatelessWidget {
 
     if (MediaQuery.of(context).orientation == Orientation.portrait) {
       return Column(
-        children: <Widget>[SizedBox(height: 15.0,),Text(addressAndCommune(), style: utils.setAddressFontSize(addressAndCommune().length)),SizedBox(height: 10.0), Text((phone ?? ""))],
+        children: <Widget>[SizedBox(height: 15.0,),Text(addressAndCommune(), style: utils.setAddressFontSize(addressAndCommune().length)),SizedBox(height: 10.0), Text((widget.phone ?? ""))],
         crossAxisAlignment: CrossAxisAlignment.start,
       );
     }
@@ -128,7 +138,7 @@ class InformationCard extends StatelessWidget {
     {
       return Row(
         children: <Widget>[
-          Flexible(child: Column(children: <Widget>[Text(addressAndCommune(), style: utils.setAddressFontSize(addressAndCommune().length),),SizedBox(height: 10.0,), Text(phone ?? "")])),
+          Flexible(child: Column(children: <Widget>[Text(addressAndCommune(), style: utils.setAddressFontSize(addressAndCommune().length),),SizedBox(height: 10.0,), Text(widget.phone ?? "")])),
           Column(children: <Widget>[_howToGetButton(), _callButton()])
         ],
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,11 +148,10 @@ class InformationCard extends StatelessWidget {
 
   String addressAndCommune()
   {
-    return address+", "+commune;
+    return widget.address+", "+widget.commune;
   }
 
   _openGoogleMapsRouting() {}
 
   _realizeCall() {}
-  
 }

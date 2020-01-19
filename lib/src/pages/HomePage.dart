@@ -8,6 +8,7 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:chilemergencias/src/models/Institution.dart';
 import 'package:chilemergencias/src/providers/Provider.dart';
 import 'package:chilemergencias/utils/utils.dart' as utils;
+import 'package:chilemergencias/utils/globals.dart' as globals;
 
 class HomePage extends StatefulWidget {
   @override
@@ -175,6 +176,7 @@ class _HomePageState extends State<HomePage> {
   LatLng _loadInformationCard(String institutionId) {
     Institution institution = _allData[institutionId];
     setState(() {
+            globals.isInformationCardVisible = true;
             _informationCard = InformationCard(
                 name: institution.name,
                 address: institution.address,
