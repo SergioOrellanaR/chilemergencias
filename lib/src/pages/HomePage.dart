@@ -182,7 +182,9 @@ class _HomePageState extends State<HomePage> {
                 address: institution.address,
                 commune: institution.commune,
                 phone: institution.phone,
-                institutionCode: institutionCode(institutionId));
+                institutionCode: institutionCode(institutionId),
+                latitude: institution.latitude,
+                longitude: institution.longitude,);
           });
     return LatLng(institution.latitude, institution.longitude);
   }

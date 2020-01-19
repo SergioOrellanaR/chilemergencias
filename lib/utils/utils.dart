@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 double setZoomLevel(num metersToClosest) {
     double zoomValue;
@@ -116,3 +117,15 @@ TextStyle setAddressFontSize(int length)
   return TextStyle(fontSize: _fontSize);
 }
 
+class MapUtils {
+
+  MapUtils._();
+  static Future<void> openMap(double latitude, double longitude) async {
+    String googleUrl = "https://www.google.com/maps/dir/?api=1&destination=$latitude,$longitude";
+    if (await canLaunch(googleUrl)) {
+      await launch(googleUrl);
+    } else {
+      throw 'Could not open the map.';
+    }
+  }
+}

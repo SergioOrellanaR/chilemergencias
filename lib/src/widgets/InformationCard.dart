@@ -1,4 +1,6 @@
+import 'package:chilemergencias/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:chilemergencias/utils/utils.dart' as utils;
 import 'package:chilemergencias/utils/globals.dart' as globals;
 
@@ -10,8 +12,10 @@ class InformationCard extends StatefulWidget {
   final String commune;
   final String phone;
   final String institutionCode;
+  final double latitude;
+  final double longitude;
 
-  InformationCard({@required this.name, @required this.address, this.phone, @required this.commune, @required this.institutionCode});  
+  InformationCard({@required this.name, @required this.address, this.phone, @required this.commune, @required this.institutionCode, @required this.latitude, @required this.longitude});  
 
   @override
   _InformationCardState createState() => _InformationCardState();
@@ -78,37 +82,36 @@ class _InformationCardState extends State<InformationCard> {
   Row _portraitActionButtons() {
     return Row(
       children: <Widget>[
-        FlatButton(
-          child: Text("Cómo llegar"),
-          onPressed: _openGoogleMapsRouting,
-          textColor: Colors.blue,
-        ),
-        FlatButton(
-          child: Text("Llamar"),
-          onPressed: _realizeCall,
-          textColor: Colors.blue,
-        ),
+        _howToGetButton(padded: true),
+        _callButton(padded: true)  
       ],
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.start,
     );
   }
 
-  FlatButton _callButton() {
-    return FlatButton(
+  Widget _callButton({bool padded = false}) {
+    if(widget.phone != null)
+    {
+      return FlatButton(
         child: Text("Llamar"),
-        onPressed: () {},
+        onPressed: _realizePhoneCall,
         textColor: Colors.blue,
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        materialTapTargetSize: padded ? MaterialTapTargetSize.padded : MaterialTapTargetSize.shrinkWrap,
       );
+    }
+    else
+    {
+      return Container();
+    }
   }
 
-  FlatButton _howToGetButton() {
+  FlatButton _howToGetButton({bool padded = false}) {
     return FlatButton(
         child: Text("Cómo llegar"),
-        onPressed: () {},
+        onPressed: _openGoogleMapsRouting,
         textColor: Colors.blue,
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        materialTapTargetSize: padded ? MaterialTapTargetSize.padded : MaterialTapTargetSize.shrinkWrap,
       );
   }
 
@@ -154,7 +157,12 @@ class _InformationCardState extends State<InformationCard> {
     return widget.address+", "+widget.commune;
   }
 
-  _openGoogleMapsRouting() {}
+  _openGoogleMapsRouting() {
+    MapUtils.openMap(widget.latitude, widget.longitude);
+  }
 
-  _realizeCall() {}
+  _realizePhoneCall() 
+  {
+    launch("tel://"+widget.phone);
+  }
 }
