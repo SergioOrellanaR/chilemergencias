@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:chilemergencias/src/widgets/InformationCard.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong/latlong.dart' as latlong;
@@ -36,9 +37,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         // appBar: AppBar(title: Text("Hi")),
         body: Stack(
-          children: <Widget>[mapWithStreaming(), _goToClosest()],
+          children: <Widget>[mapWithStreaming(), _goToClosest(), InformationCard()],
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         floatingActionButton: _createOperationButtons());
   }
 
@@ -61,38 +62,37 @@ class _HomePageState extends State<HomePage> {
 
   Widget _createOperationButtons() {
     FloatingActionButton zoomIn = new FloatingActionButton(
-      child: Icon(Icons.zoom_in),
+      child: Icon(Icons.zoom_in, size: 35.0), elevation: 50.0,
       onPressed: () {
         _mapController.animateCamera(CameraUpdate.zoomIn());
       },
     );
 
     FloatingActionButton zoomOut = new FloatingActionButton(
-      child: Icon(Icons.zoom_out),
+      child: Icon(Icons.zoom_out, size: 35.0), elevation: 50.0,
       onPressed: () {
         _mapController.animateCamera(CameraUpdate.zoomOut());        
       },
     );
 
-    return Row(
-      children: <Widget>[
-        Expanded(child: SizedBox()),
-        Column(
+    return Column(
           children: <Widget>[
+            Expanded(child: SizedBox(),),
             SizedBox(
-              height: 130.0,
+              height: 100.0,
             ),
             zoomIn,
             SizedBox(
-              height: 10.0,
+              height: 15.0,
             ),
             zoomOut,
-            Expanded(child: SizedBox()),
+            Expanded(child: SizedBox(),),
             _centerGpsCamera(),
           ],
-        ),
-      ],
-    );
+
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+        );
   }
 
   FloatingActionButton _centerGpsCamera() {
@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
         await _mapController
             .animateCamera(CameraUpdate.newLatLngZoom(_myPosition, 14.0));
       },
-      child: Icon(Icons.gps_fixed),
+      child: Icon(Icons.gps_fixed, size: 40.0),
     );
   }
 
