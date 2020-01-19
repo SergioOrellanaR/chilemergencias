@@ -24,6 +24,7 @@ class _HomePageState extends State<HomePage> {
   List<String> _closestThreeOfEachInstitutionId;
   Map<String, String> _symbolInstitutionConnected;
   dynamic closestInformation;
+  InformationCard _informationCard;
 
   @override
   void initState() {
@@ -36,9 +37,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         // appBar: AppBar(title: Text("Hi")),
-        body: Stack(
-          children: <Widget>[mapWithStreaming(), _goToClosest(), InformationCard()],
-        ),
+        body: Stack(children: <Widget>[
+          mapWithStreaming(),
+          _goToClosest(),
+          _informationCard ?? Container()
+        ]),
         //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         floatingActionButton: _createOperationButtons());
   }
@@ -62,37 +65,42 @@ class _HomePageState extends State<HomePage> {
 
   Widget _createOperationButtons() {
     FloatingActionButton zoomIn = new FloatingActionButton(
-      child: Icon(Icons.zoom_in, size: 35.0), elevation: 50.0,
+      child: Icon(Icons.zoom_in, size: 35.0),
+      elevation: 50.0,
       onPressed: () {
         _mapController.animateCamera(CameraUpdate.zoomIn());
       },
     );
 
     FloatingActionButton zoomOut = new FloatingActionButton(
-      child: Icon(Icons.zoom_out, size: 35.0), elevation: 50.0,
+      child: Icon(Icons.zoom_out, size: 35.0),
+      elevation: 50.0,
       onPressed: () {
-        _mapController.animateCamera(CameraUpdate.zoomOut());        
+        _mapController.animateCamera(CameraUpdate.zoomOut());
       },
     );
 
     return Column(
-          children: <Widget>[
-            Expanded(child: SizedBox(),),
-            SizedBox(
-              height: 100.0,
-            ),
-            zoomIn,
-            SizedBox(
-              height: 15.0,
-            ),
-            zoomOut,
-            Expanded(child: SizedBox(),),
-            _centerGpsCamera(),
-          ],
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-        );
+      children: <Widget>[
+        Expanded(
+          child: SizedBox(),
+        ),
+        SizedBox(
+          height: 100.0,
+        ),
+        zoomIn,
+        SizedBox(
+          height: 15.0,
+        ),
+        zoomOut,
+        Expanded(
+          child: SizedBox(),
+        ),
+        _centerGpsCamera(),
+      ],
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
+    );
   }
 
   FloatingActionButton _centerGpsCamera() {
@@ -118,8 +126,7 @@ class _HomePageState extends State<HomePage> {
 
           if (_mapController != null && _areMarkersDrawed == false) {
             widget = drawInstitutionsOnMap();
-          } else if (_mapController != null && _areMarkersDrawed) 
-          {
+          } else if (_mapController != null && _areMarkersDrawed) {
             updateIconsAtNewPosition();
           }
 
@@ -150,13 +157,11 @@ class _HomePageState extends State<HomePage> {
         myLocationEnabled: true,
         onMapCreated: (controller) {
           _mapController = controller;
-          _mapController.onSymbolTapped.add(
-            (symbol) 
-            {
-              print(symbol.id);
-              print(_symbolInstitutionConnected[symbol.id]);
-            } 
-            );
+          _mapController.onSymbolTapped.add((symbol) {
+            String institutionId = _symbolInstitutionConnected[symbol.id];
+            LatLng focusedInstitution= _loadInformationCard(institutionId); 
+            _mapController.animateCamera(CameraUpdate.newLatLngZoom(focusedInstitution, 14.0));
+          });
         },
         compassEnabled: true,
         //minMaxZoomPreference: MinMaxZoomPreference(),
@@ -165,6 +170,19 @@ class _HomePageState extends State<HomePage> {
         tiltGesturesEnabled: true,
         styleString: MapboxStyles.DARK,
         zoomGesturesEnabled: true);
+  }
+
+  LatLng _loadInformationCard(String institutionId) {
+    Institution institution = _allData[institutionId];
+    setState(() {
+            _informationCard = InformationCard(
+                name: institution.name,
+                address: institution.address,
+                commune: institution.commune,
+                phone: institution.phone,
+                institutionCode: institutionCode(institutionId));
+          });
+    return LatLng(institution.latitude, institution.longitude);
   }
 
   //TODO: Controlar que map controller no sea null mientras se tenga data.
@@ -192,18 +210,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<Symbol> _addSymbol(String iconImage, LatLng latLng) async {
-    return _mapController.addSymbol(
-      SymbolOptions(geometry: latLng, iconImage: iconImage)
-    );
+    return _mapController
+        .addSymbol(SymbolOptions(geometry: latLng, iconImage: iconImage));
   }
 
   void _addMarkers() async {
-    _symbolInstitutionConnected = new Map<String,String>();
+    _symbolInstitutionConnected = new Map<String, String>();
     for (String institutionId in _closestThreeOfEachInstitutionId) {
       Institution item = _allData[institutionId];
-      String iconImage = utils.iconByInstitution(institutionId.substring(institutionId.length - 5));
-      Symbol sym = await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
-      
+      String iconImage =
+          utils.iconByInstitution(institutionCode(institutionId));
+      Symbol sym =
+          await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
+
       _symbolInstitutionConnected.putIfAbsent(sym.id, () => institutionId);
     }
   }
@@ -229,12 +248,9 @@ class _HomePageState extends State<HomePage> {
         fontSize: 18.0,
         fontStyle: FontStyle.italic);
 
-    FloatingActionButton closestUrgencias =
-        _createClosestButton("assets/Urgencias_Chile.png");
-    FloatingActionButton closestBomberos =
-        _createClosestButton("assets/Bomberos_Chile.png");
-    FloatingActionButton closestCarabineros =
-        _createClosestButton("assets/Carabineros_Chile.png");
+    FloatingActionButton closestUrgencias = _createClosestButton("Urgen");
+    FloatingActionButton closestBomberos = _createClosestButton("Bombe");
+    FloatingActionButton closestCarabineros = _createClosestButton("Carab");
 
     return Column(
       children: <Widget>[
@@ -260,8 +276,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  FloatingActionButton _createClosestButton(String assetImage) {
-    String institutionName = _institutionNameByAssetImage(assetImage);
+  FloatingActionButton _createClosestButton(String institutionCode) {
+    String assetImage =
+        utils.assetImageOnClosestButtonByInstitutionCode(institutionCode);
     return FloatingActionButton(
       child: Image(
         image: AssetImage(assetImage),
@@ -269,18 +286,20 @@ class _HomePageState extends State<HomePage> {
         width: 45.0,
       ),
       onPressed: () {
-        _goToClosestBuilding(institutionName);
+        String closestId = _closestBuilding(institutionCode);
+        _loadInformationCard(closestId);
       },
       backgroundColor: Colors.white,
     );
   }
 
-  void _goToClosestBuilding(String institutionName) {
+  String _closestBuilding(String institutionCode) {
     int idElementIndex = 0;
     int distanceIndex = 1;
-    closestInformation = _getClosestInformation(institutionName);
+    closestInformation = _getClosestInformation(institutionCode);
+    String closestId;
     if (closestInformation != null) {
-      String closestId = closestInformation[idElementIndex];
+      closestId = closestInformation[idElementIndex];
       Institution closestInstitution = _allData[closestId];
       double zoom =
           utils.setZoomLevel(num.parse(closestInformation[distanceIndex]));
@@ -288,6 +307,7 @@ class _HomePageState extends State<HomePage> {
           LatLng(closestInstitution.latitude, closestInstitution.longitude),
           zoom));
     }
+    return closestId;
   }
 
   void _setDistanceBetweenPositionAndInstitutions() {
@@ -300,14 +320,14 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  _getClosestInformation(String institutionName) {
+  _getClosestInformation(String institutionCode) {
     final latlong.Distance distance = new latlong.Distance();
     latlong.LatLng mypos =
         latlong.LatLng(_myPosition.latitude, _myPosition.longitude);
     num minorDistance;
     int closestId;
     List<Institution> servicesList =
-        provider.listByInstitution(institutionName);
+        provider.listByInstitution(institutionCode);
 
     for (int i = 0; i < servicesList.length; i++) {
       latlong.LatLng objectPosition =
@@ -322,29 +342,10 @@ class _HomePageState extends State<HomePage> {
 
     return (closestId != null)
         ? [
-            closestId.toString() + "_" + institutionName,
+            closestId.toString() + "_" + institutionCode,
             minorDistance.toString()
           ]
         : null;
-  }
-
-  String _institutionNameByAssetImage(String assetImage) {
-    String value;
-    switch (assetImage) {
-      case "assets/Urgencias_Chile.png":
-        value = "Urgen";
-        break;
-      case "assets/Bomberos_Chile.png":
-        value = "Bombe";
-        break;
-      case "assets/Carabineros_Chile.png":
-        value = "Carab";
-        break;
-      default:
-        value = null;
-        break;
-    }
-    return value;
   }
 
   _loadClosestThreeOfEach() {
@@ -361,9 +362,13 @@ class _HomePageState extends State<HomePage> {
   List<String> _topThreeByInstitution(
       List<String> sortedKeys, String institutionName) {
     List<String> topThree = sortedKeys
-        .where((value) => value.substring(value.length - 5) == institutionName)
+        .where((value) => institutionCode(value) == institutionName)
         .toList();
     return [topThree[0], topThree[1], topThree[2]];
+  }
+
+  String institutionCode(String institutionId) {
+    return institutionId.substring(institutionId.length - 5);
   }
 
   @override

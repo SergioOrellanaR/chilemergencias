@@ -35,7 +35,7 @@ class InformationCard extends StatelessWidget {
     return Column(children: <Widget>[
       ListTile(
           leading: _leadingImage(),
-          title: _titleRow(),
+          title: _titleRow(context),
           subtitle: _informationColumn(context),
           ),
       (MediaQuery.of(context).orientation == Orientation.portrait)
@@ -103,12 +103,12 @@ class InformationCard extends StatelessWidget {
       );
   }
 
-  Row _titleRow() {
+  Row _titleRow(BuildContext context) {
     return Row(
       children: <Widget>[
         Text(name, style: utils.setTitleFontSize(name.length)),
         Expanded(child: SizedBox()),
-        GestureDetector( onTap: () {}, child: Icon(
+        GestureDetector( onTap: () => Navigator.of(context).pop(), child: Icon(
               Icons.close,
               size: 20.0,
             ))
@@ -144,8 +144,5 @@ class InformationCard extends StatelessWidget {
   _openGoogleMapsRouting() {}
 
   _realizeCall() {}
-
-  
-
   
 }
