@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   MapboxMap _mapBoxMap;
   Map<String, dynamic> _allData;
   List<String> _closestThreeOfEachInstitutionId;
+  Map<String, String> _symbolInstitutionConnected;
   dynamic closestInformation;
 
   @override
@@ -69,7 +70,7 @@ class _HomePageState extends State<HomePage> {
     FloatingActionButton zoomOut = new FloatingActionButton(
       child: Icon(Icons.zoom_out),
       onPressed: () {
-        _mapController.animateCamera(CameraUpdate.zoomOut());
+        _mapController.animateCamera(CameraUpdate.zoomOut());        
       },
     );
 
@@ -117,15 +118,9 @@ class _HomePageState extends State<HomePage> {
 
           if (_mapController != null && _areMarkersDrawed == false) {
             widget = drawInstitutionsOnMap();
-          } else if (_mapController != null && _areMarkersDrawed) {
-            _setDistanceBetweenPositionAndInstitutions();
-            List<String> topThree = _loadClosestThreeOfEach();
-
-            if (!listEquals(topThree, _closestThreeOfEachInstitutionId)) {
-              _closestThreeOfEachInstitutionId = topThree;
-              _clearMarkers();
-              _addMarkers();
-            }
+          } else if (_mapController != null && _areMarkersDrawed) 
+          {
+            updateIconsAtNewPosition();
           }
 
           //_setDistanceBetweenPositionAndInstitutions();
@@ -139,18 +134,36 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void updateIconsAtNewPosition() {
+    _setDistanceBetweenPositionAndInstitutions();
+    List<String> topThree = _loadClosestThreeOfEach();
+    if (!listEquals(topThree, _closestThreeOfEachInstitutionId)) {
+      _closestThreeOfEachInstitutionId = topThree;
+      _clearMarkers();
+      _addMarkers();
+    }
+  }
+
   void _createMapBoxMap() {
     _mapBoxMap = MapboxMap(
         initialCameraPosition: CameraPosition(target: _myPosition, zoom: 14),
         myLocationEnabled: true,
         onMapCreated: (controller) {
           _mapController = controller;
+          _mapController.onSymbolTapped.add(
+            (symbol) 
+            {
+              print(symbol.id);
+              print(_symbolInstitutionConnected[symbol.id]);
+            } 
+            );
         },
         compassEnabled: true,
         //minMaxZoomPreference: MinMaxZoomPreference(),
         //onCameraTrackingDismissed: (){print("Salimos del foco perrito");},
         rotateGesturesEnabled: false,
         tiltGesturesEnabled: true,
+        styleString: MapboxStyles.DARK,
         zoomGesturesEnabled: true);
   }
 
@@ -180,15 +193,18 @@ class _HomePageState extends State<HomePage> {
 
   Future<Symbol> _addSymbol(String iconImage, LatLng latLng) async {
     return _mapController.addSymbol(
-      SymbolOptions(geometry: latLng, iconImage: iconImage),
+      SymbolOptions(geometry: latLng, iconImage: iconImage)
     );
   }
 
   void _addMarkers() async {
-    for (String id in _closestThreeOfEachInstitutionId) {
-      Institution item = _allData[id];
-      String iconImage = utils.iconByInstitution(id.substring(id.length - 5));
-      await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
+    _symbolInstitutionConnected = new Map<String,String>();
+    for (String institutionId in _closestThreeOfEachInstitutionId) {
+      Institution item = _allData[institutionId];
+      String iconImage = utils.iconByInstitution(institutionId.substring(institutionId.length - 5));
+      Symbol sym = await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
+      
+      _symbolInstitutionConnected.putIfAbsent(sym.id, () => institutionId);
     }
   }
 
