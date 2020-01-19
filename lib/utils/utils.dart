@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 double setZoomLevel(num metersToClosest) {
     double zoomValue;
     if (metersToClosest < 500) {
@@ -39,8 +41,78 @@ String iconByInstitution(String institutionName) {
         value = "police-15";
         break;
       default:
-        value = null;
         break;
     }
     return value;
   }
+
+String assetImageOnClosestButtonByInstitutionCode(String institutionCode) {
+    String value;
+    switch (institutionCode) {
+      case "Urgen":
+        value = "assets/Urgencias_Chile.png";
+        break;
+      case "Bombe":
+        value = "assets/Bomberos_Chile.png";
+        break;
+      case "Carab":
+        value = "assets/Carabineros_Chile.png";
+        break;
+      default:
+        break;
+    }
+    return value;
+  }
+
+String assetImageOnCardByInstitutionCode(String institutionCode) {
+    String value;
+    switch (institutionCode) {
+      case "Urgen":
+        value = "assets/Urgencias_Chile.png";
+        break;
+      case "Bombe":
+        value = "assets/Bomberos3DSinRelleno.png";
+        break;
+      case "Carab":
+        value = "assets/Carabineros3D.png";
+        break;
+      default:
+        break;
+    }
+    return value;
+  }
+
+TextStyle setTitleFontSize(int length)
+{
+  double _fontSize;
+  if (length<30)
+  {
+    _fontSize = 14.0;
+  }
+  else if (length<40)
+  {
+    _fontSize = 12.0;
+  }
+  else if(length<50)
+  {
+    _fontSize = 10.5;
+  }
+  else
+  {
+    _fontSize = 8.0;
+  }
+
+  return TextStyle(fontSize: _fontSize, fontWeight: FontWeight.bold);
+}
+
+TextStyle setAddressFontSize(int length)
+{
+  double _fontSize = 14.0;
+  if (length>85)
+  {
+    _fontSize = 12.0;
+  }
+
+  return TextStyle(fontSize: _fontSize);
+}
+
