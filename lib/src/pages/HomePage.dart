@@ -57,8 +57,6 @@ class _HomePageState extends State<HomePage> {
           child: _getClosestButtons(),
           height: 90.0,
           width: 250.0,
-          decoration: ShapeDecoration(
-              shape: StadiumBorder(), color: Color.fromRGBO(80, 154, 195, 0.5)),
         ),
       ],
     );
@@ -160,8 +158,9 @@ class _HomePageState extends State<HomePage> {
           _mapController = controller;
           _mapController.onSymbolTapped.add((symbol) {
             String institutionId = _symbolInstitutionConnected[symbol.id];
-            LatLng focusedInstitution= _loadInformationCard(institutionId); 
-            _mapController.animateCamera(CameraUpdate.newLatLngZoom(focusedInstitution, 14.0));
+            LatLng focusedInstitution = _loadInformationCard(institutionId);
+            _mapController.animateCamera(
+                CameraUpdate.newLatLngZoom(focusedInstitution, 14.0));
           });
         },
         compassEnabled: true,
@@ -176,16 +175,17 @@ class _HomePageState extends State<HomePage> {
   LatLng _loadInformationCard(String institutionId) {
     Institution institution = _allData[institutionId];
     setState(() {
-            globals.isInformationCardVisible = true;
-            _informationCard = InformationCard(
-                name: institution.name,
-                address: institution.address,
-                commune: institution.commune,
-                phone: institution.phone,
-                institutionCode: institutionCode(institutionId),
-                latitude: institution.latitude,
-                longitude: institution.longitude,);
-          });
+      globals.isInformationCardVisible = true;
+      _informationCard = InformationCard(
+        name: institution.name,
+        address: institution.address,
+        commune: institution.commune,
+        phone: institution.phone,
+        institutionCode: institutionCode(institutionId),
+        latitude: institution.latitude,
+        longitude: institution.longitude,
+      );
+    });
     return LatLng(institution.latitude, institution.longitude);
   }
 
@@ -247,8 +247,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _getClosestButtons() {
     TextStyle textStyle = TextStyle(
-        color: Colors.black,
-        fontWeight: FontWeight.bold,
+        color: Colors.white,
         fontSize: 18.0,
         fontStyle: FontStyle.italic);
 
@@ -258,23 +257,26 @@ class _HomePageState extends State<HomePage> {
 
     return Column(
       children: <Widget>[
-        Text(
-          "Ir a mas cercano",
-          style: textStyle,
+        Container(
+          child: Text(
+                "Buscar mas cercano",
+                style: textStyle,
+              ),
+          decoration: ShapeDecoration(
+            shape: StadiumBorder(),
+            color: Color.fromRGBO(20, 20, 20, 0.2),
+          ),
+        ),
+        SizedBox(
+          height: 5.0,
         ),
         Row(
           children: <Widget>[
             closestUrgencias,
-            SizedBox(
-              width: 10.0,
-            ),
             closestBomberos,
-            SizedBox(
-              width: 10.0,
-            ),
             closestCarabineros
           ],
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
         )
       ],
     );
@@ -293,7 +295,7 @@ class _HomePageState extends State<HomePage> {
         String closestId = _closestBuilding(institutionCode);
         _loadInformationCard(closestId);
       },
-      backgroundColor: Colors.white,
+      backgroundColor: utils.setColorByInstitutionCode(institutionCode),
     );
   }
 

@@ -83,6 +83,26 @@ String assetImageOnCardByInstitutionCode(String institutionCode) {
     return value;
   }
 
+Color setColorByInstitutionCode(String institutionCode)
+  {
+    Color color;
+
+    switch (institutionCode) {
+      case "Urgen":
+        color = Color.fromRGBO(138, 3, 18, 0.6);
+        break;
+      case "Bombe":
+        color = Color.fromRGBO(50, 50, 138, 0.4);
+        break;
+      case "Carab":
+        color = Color.fromRGBO(50, 138, 50, 0.4);
+        break;
+      default:
+        break;
+    }
+    return color;
+  }
+
 TextStyle setTitleFontSize(int length)
 {
   double _fontSize;
