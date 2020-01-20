@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
           _informationCard ?? Container()
         ]),
         //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        floatingActionButton: _createOperationButtons());
+        floatingActionButton: _mapController == null ? Container() : _createOperationButtons());
   }
 
   Column _goToClosest() {
