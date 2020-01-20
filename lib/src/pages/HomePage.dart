@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> {
         // appBar: AppBar(title: Text("Hi")),
         body: Stack(children: <Widget>[
           mapWithStreaming(),
-          _goToClosest(),
+          _mapController == null ? Container() : _goToClosest(),
           _informationCard ?? Container()
         ]),
         //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -69,6 +69,7 @@ class _HomePageState extends State<HomePage> {
       onPressed: () {
         _mapController.animateCamera(CameraUpdate.zoomIn());
       },
+      backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
     );
 
     FloatingActionButton zoomOut = new FloatingActionButton(
@@ -77,6 +78,7 @@ class _HomePageState extends State<HomePage> {
       onPressed: () {
         _mapController.animateCamera(CameraUpdate.zoomOut());
       },
+      backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
     );
 
     return Column(
@@ -109,6 +111,7 @@ class _HomePageState extends State<HomePage> {
             .animateCamera(CameraUpdate.newLatLngZoom(_myPosition, 14.0));
       },
       child: Icon(Icons.gps_fixed, size: 40.0),
+      backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
     );
   }
 
@@ -155,7 +158,9 @@ class _HomePageState extends State<HomePage> {
         initialCameraPosition: CameraPosition(target: _myPosition, zoom: 14),
         myLocationEnabled: true,
         onMapCreated: (controller) {
-          _mapController = controller;
+          setState(() {
+            _mapController = controller;
+          });
           _mapController.onSymbolTapped.add((symbol) {
             String institutionId = _symbolInstitutionConnected[symbol.id];
             LatLng focusedInstitution = _loadInformationCard(institutionId);
@@ -215,7 +220,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<Symbol> _addSymbol(String iconImage, LatLng latLng) async {
     return _mapController
-        .addSymbol(SymbolOptions(geometry: latLng, iconImage: iconImage));
+        .addSymbol(SymbolOptions(geometry: latLng, iconImage: iconImage, draggable: false,  iconSize: 1.3 ));
   }
 
   void _addMarkers() async {
@@ -234,16 +239,6 @@ class _HomePageState extends State<HomePage> {
   void _clearMarkers() async {
     await _mapController.clearSymbols();
   }
-
-  // void _addMarkers(String institutionName) async {
-  //   List<Institution> institutionList =
-  //       provider.listByInstitution(institutionName);
-  //   String iconImage = utils.iconByInstitution(institutionName);
-
-  //   for (Institution item in institutionList) {
-  //     await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
-  //   }
-  // }
 
   Widget _getClosestButtons() {
     TextStyle textStyle = TextStyle(
