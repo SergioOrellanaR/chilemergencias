@@ -1,3 +1,4 @@
+import 'package:chilemergencias/src/controllers/ErrorHandler.dart' as errors;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -135,6 +136,18 @@ TextStyle setAddressFontSize(int length)
   }
 
   return TextStyle(fontSize: _fontSize);
+}
+
+errors.ErrorHandler getErrorInformationByErrorCode(String errorCode)
+{
+  try
+  {
+    return errors.errorController[errorCode];
+  }
+  catch (e)
+  {
+    return errors.errorController["unknownError"];
+  }
 }
 
 class MapUtils {

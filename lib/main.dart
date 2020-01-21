@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     //TODO: Que al activar o mejorar la condición de alguno de estos problemas la aplicación vuelva a cargar (Usar streams).
     bool _posPermission = await _isLocationStatusAndPermissionsEnabled();
     bool _haveConectivity = await _phoneHaveConectivity();
-    print("El teléfono " + (_haveConectivity ? "" : "no ") + "tiene conexión");  
+    //print("El teléfono " + (_haveConectivity ? "" : "no ") + "tiene conexión");  
 
     if (_posPermission && _haveConectivity) {
       return true;
@@ -48,8 +48,8 @@ class MyApp extends StatelessWidget {
         await LocationPermissions().checkPermissionStatus();
     ServiceStatus _serviceStatus =
         await LocationPermissions().checkServiceStatus();
-    print(
-        "Validando permiso de gps, su estado es: $_permissionStatus y el estado del servicio de localización es: $_serviceStatus");
+    // print(
+    //     "Validando permiso de gps, su estado es: $_permissionStatus y el estado del servicio de localización es: $_serviceStatus");
     return (_permissionStatus == PermissionStatus.granted &&
         _serviceStatus == ServiceStatus.enabled);
   }

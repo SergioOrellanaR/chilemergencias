@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:chilemergencias/src/widgets/InformationCard.dart';
+import 'package:chilemergencias/src/widgets/ValidatorWidget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong/latlong.dart' as latlong;
@@ -41,6 +42,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         body: Stack(children: <Widget>[
           mapWithStreaming(),
+          ValidatorWidget(),
           _mapController == null ? Container() : _goToClosest(),
           _informationCard ?? Container()
         ]),
@@ -165,6 +167,7 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[_mapBoxMap, widget],
           );
         } else {
+          print(snapshot.connectionState);
           return Center(child: CircularProgressIndicator());
         }
       },
