@@ -26,6 +26,8 @@ class _HomePageState extends State<HomePage> {
   Map<String, String> _symbolInstitutionConnected;
   dynamic closestInformation;
   InformationCard _informationCard;
+  bool _buttonPressedonZoom = false;
+  bool _loopActiveOnZoom = false;
 
   @override
   void initState() {
@@ -37,14 +39,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(title: Text("Hi")),
         body: Stack(children: <Widget>[
           mapWithStreaming(),
           _mapController == null ? Container() : _goToClosest(),
           _informationCard ?? Container()
         ]),
-        //floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        floatingActionButton: _mapController == null ? Container() : _createOperationButtons());
+        floatingActionButton:
+            _mapController == null ? Container() : _createOperationButtons());
   }
 
   Column _goToClosest() {
@@ -63,23 +64,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _createOperationButtons() {
-    FloatingActionButton zoomIn = new FloatingActionButton(
-      child: Icon(Icons.zoom_in, size: 35.0),
-      elevation: 50.0,
-      onPressed: () {
-        _mapController.animateCamera(CameraUpdate.zoomIn());
-      },
-      backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
-    );
-
-    FloatingActionButton zoomOut = new FloatingActionButton(
-      child: Icon(Icons.zoom_out, size: 35.0),
-      elevation: 50.0,
-      onPressed: () {
-        _mapController.animateCamera(CameraUpdate.zoomOut());
-      },
-      backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
-    );
+    Listener zoomIn = _zoomButtonListener(isZoomIn: true);
+    Listener zoomOut = _zoomButtonListener(isZoomIn: false);
 
     return Column(
       children: <Widget>[
@@ -104,6 +90,49 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Listener _zoomButtonListener({bool isZoomIn}) {
+    return Listener(
+      onPointerDown: (details) {
+        _buttonPressedonZoom = true;
+        _zoomWhilePressed(isZoomIn);
+      },
+      onPointerUp: (details) {
+        _buttonPressedonZoom = false;
+      },
+      child: _zoomButtonConfiguration(isZoomIn),
+    );
+  }
+
+  FloatingActionButton _zoomButtonConfiguration(bool isZoomIn) {
+    return new FloatingActionButton(
+      child: Icon(isZoomIn ? Icons.zoom_in : Icons.zoom_out, size: 35.0),
+      elevation: 50.0,
+      onPressed: () {},
+      backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
+    );
+  }
+
+  void _zoomWhilePressed(bool isZoomIn) async {
+    // make sure that only one loop is active
+    if (_loopActiveOnZoom) return;
+
+    _loopActiveOnZoom = true;
+
+    while (_buttonPressedonZoom) {
+      setState(() {
+        if (isZoomIn) {
+          _mapController.animateCamera(CameraUpdate.zoomIn());
+        } else {
+          _mapController.animateCamera(CameraUpdate.zoomOut());
+        }
+      });
+
+      await Future.delayed(Duration(milliseconds: 400));
+    }
+
+    _loopActiveOnZoom = false;
+  }
+
   FloatingActionButton _centerGpsCamera() {
     return FloatingActionButton(
       onPressed: () async {
@@ -115,7 +144,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  //Despues descubri que el mismo MapBoxMap me permite centrar la ubicación XD
   mapWithStreaming() {
     var location = new Location();
     return StreamBuilder(
@@ -169,8 +197,6 @@ class _HomePageState extends State<HomePage> {
           });
         },
         compassEnabled: true,
-        //minMaxZoomPreference: MinMaxZoomPreference(),
-        //onCameraTrackingDismissed: (){print("Salimos del foco perrito");},
         rotateGesturesEnabled: false,
         tiltGesturesEnabled: true,
         styleString: MapboxStyles.DARK,
@@ -218,22 +244,26 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<Symbol> _addSymbol(String iconImage ,double iconSize, LatLng latLng) async {
-    return _mapController
-        .addSymbol(SymbolOptions(geometry: latLng, iconImage: iconImage, draggable: false,  iconSize: iconSize ));
+  Future<Symbol> _addSymbol(
+      String iconImage, double iconSize, LatLng latLng) async {
+    return _mapController.addSymbol(SymbolOptions(
+        geometry: latLng,
+        iconImage: iconImage,
+        draggable: false,
+        iconSize: iconSize));
   }
 
   void _addMarkers() async {
     _symbolInstitutionConnected = new Map<String, String>();
     for (String institutionId in _closestThreeOfEachInstitutionId) {
-
       String _institutionCode = institutionCode(institutionId);
 
       Institution item = _allData[institutionId];
-      double iconSize =
-          utils.iconSizeByInstitution(_institutionCode);
-      Symbol sym =
-          await _addSymbol(utils.assetImageOnClosestButtonByInstitutionCode(_institutionCode), iconSize, LatLng(item.latitude, item.longitude));
+      double iconSize = utils.iconSizeByInstitution(_institutionCode);
+      Symbol sym = await _addSymbol(
+          utils.assetImageOnClosestButtonByInstitutionCode(_institutionCode),
+          iconSize,
+          LatLng(item.latitude, item.longitude));
 
       _symbolInstitutionConnected.putIfAbsent(sym.id, () => institutionId);
     }
@@ -245,9 +275,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _getClosestButtons() {
     TextStyle textStyle = TextStyle(
-        color: Colors.white,
-        fontSize: 18.0,
-        fontStyle: FontStyle.italic);
+        color: Colors.white, fontSize: 18.0, fontStyle: FontStyle.italic);
 
     FloatingActionButton closestUrgencias = _createClosestButton("Urgen");
     FloatingActionButton closestBomberos = _createClosestButton("Bombe");
@@ -257,9 +285,9 @@ class _HomePageState extends State<HomePage> {
       children: <Widget>[
         Container(
           child: Text(
-                "Buscar mas cercano",
-                style: textStyle,
-              ),
+            "Buscar mas cercano",
+            style: textStyle,
+          ),
           decoration: ShapeDecoration(
             shape: StadiumBorder(),
             color: Color.fromRGBO(20, 20, 20, 0.2),
