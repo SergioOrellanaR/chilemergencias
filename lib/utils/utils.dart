@@ -29,17 +29,17 @@ double setZoomLevel(num metersToClosest) {
     return zoomValue;
   }
 
-String iconByInstitution(String institutionName) {
-    String value;
+double iconSizeByInstitution(String institutionName) {
+    double value;
     switch (institutionName) {
       case "Urgen":
-        value = "hospital-15";
+        value = 0.08;
         break;
       case "Bombe":
-        value = "fire-station-15";
+        value = 0.12;
         break;
       case "Carab":
-        value = "police-15";
+        value = 0.5;
         break;
       default:
         break;

@@ -218,19 +218,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<Symbol> _addSymbol(String iconImage, LatLng latLng) async {
+  Future<Symbol> _addSymbol(String iconImage ,double iconSize, LatLng latLng) async {
     return _mapController
-        .addSymbol(SymbolOptions(geometry: latLng, iconImage: iconImage, draggable: false,  iconSize: 1.3 ));
+        .addSymbol(SymbolOptions(geometry: latLng, iconImage: iconImage, draggable: false,  iconSize: iconSize ));
   }
 
   void _addMarkers() async {
     _symbolInstitutionConnected = new Map<String, String>();
     for (String institutionId in _closestThreeOfEachInstitutionId) {
+
+      String _institutionCode = institutionCode(institutionId);
+
       Institution item = _allData[institutionId];
-      String iconImage =
-          utils.iconByInstitution(institutionCode(institutionId));
+      double iconSize =
+          utils.iconSizeByInstitution(_institutionCode);
       Symbol sym =
-          await _addSymbol(iconImage, LatLng(item.latitude, item.longitude));
+          await _addSymbol(utils.assetImageOnClosestButtonByInstitutionCode(_institutionCode), iconSize, LatLng(item.latitude, item.longitude));
 
       _symbolInstitutionConnected.putIfAbsent(sym.id, () => institutionId);
     }
