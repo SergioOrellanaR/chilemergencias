@@ -29,17 +29,17 @@ double setZoomLevel(num metersToClosest) {
     return zoomValue;
   }
 
-double iconSizeByInstitution(String institutionName) {
-    double value;
+String iconOnMapByInstitution(String institutionName) {
+    String value;
     switch (institutionName) {
       case "Urgen":
-        value = 0.08;
+        value = "assets/iconsOnMap/urgenciasIcon.png";
         break;
       case "Bombe":
-        value = 0.12;
+        value = "assets/iconsOnMap/bomberosIcon.png";
         break;
       case "Carab":
-        value = 0.5;
+        value = "assets/iconsOnMap/carabinerosIcon.png";
         break;
       default:
         break;
@@ -72,7 +72,7 @@ String assetImageOnCardByInstitutionCode(String institutionCode) {
         value = "assets/Urgencias_Chile.png";
         break;
       case "Bombe":
-        value = "assets/Bomberos3DSinRelleno.png";
+        value = "assets/Bomberos3DRelleno.png";
         break;
       case "Carab":
         value = "assets/Carabineros3D.png";
