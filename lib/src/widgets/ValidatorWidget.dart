@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:chilemergencias/utils/utils.dart' as utils;
 
 class ValidatorWidget extends StatefulWidget {
+
+  final bool isStartUpValidation;
+
+  ValidatorWidget({this.isStartUpValidation = false});
+
   @override
   _ValidatorWidgetState createState() => _ValidatorWidgetState();
 }
@@ -30,10 +35,15 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     //return (_errorExist ? _showAlert(context) : Container());
   }
 
+  disposeStream()
+  {
+    streamController?.close();
+  }
+
   showAlert(BuildContext context, ErrorHandler error) {
     showDialog(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: false,
         builder: (context) {
           return AlertDialog(
             shape: RoundedRectangleBorder(
@@ -63,7 +73,6 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
                     _thereIsAOpenDialog = false;
                     _errorExist = false;
                     Navigator.of(context).pop();
-                    error.action(context);
                   })
             ],
           );
@@ -79,8 +88,7 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
           _mapValues.forEach((key, value) {
             if (value == false && _thereIsAOpenDialog == false) {
               ErrorHandler error = utils.getErrorInformationByErrorCode(key);
-              if (error.isPersistent || _lastErrorId != key) {
-                ErrorHandler error = utils.getErrorInformationByErrorCode(key);
+              if (error.isPersistent || _lastErrorId != key || _isPersistentOnStartUp(error)) {
                 _thereIsAOpenDialog = true;
                 _errorExist = true;
                 _lastErrorId = key;
@@ -90,33 +98,39 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
               _lastErrorId = null;
             }
           });
-
-          // if(_mapValues != null && theresNoErrors() && _thereWasAnError)
-          // {
-          //   RestartWidget.restartApp(context);
-            
-          // }
-
           return Container();
         } else {
-          print("Snapshot sin data");
+          // print("Snapshot sin data");
           return Container();
         }
       },
     );
   }
 
-  bool theresNoErrors()
+  bool _isPersistentOnStartUp(ErrorHandler error)
   {
+    bool value = false;
+    if(widget.isStartUpValidation && error.isPersistentOnStartUp)
+    {
+      value = true;
+    }
+    return value;
+  }
+
+  bool theresNoErrors() {
     bool thereAreNoErrors = true;
 
-    _mapValues.forEach((key,value)
+    if (_mapValues.length > 0) {
+      _mapValues.forEach((key, value) {
+        if (value == false) {
+          thereAreNoErrors = false;
+        }
+      });
+    }
+    else
     {
-      if(value == false)
-      {
-        thereAreNoErrors = false;
-      }
-    });
+      thereAreNoErrors = false;
+    }
 
     return thereAreNoErrors;
   }

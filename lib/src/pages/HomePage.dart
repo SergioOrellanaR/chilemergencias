@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[_mapBoxMap, widget],
           );
         } else {
-          print(snapshot.connectionState);
+          // print(snapshot.connectionState);
           return Center(child: CircularProgressIndicator());
         }
       },

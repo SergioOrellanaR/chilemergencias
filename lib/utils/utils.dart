@@ -140,13 +140,13 @@ errors.ErrorHandler getErrorInformationByErrorCode(String errorCode) {
 
 Future<bool> isPermissionStatusGranted() async {
   PermissionStatus status = await LocationPermissions().checkPermissionStatus();
-  print("Estado permiso: $status");
+  //print("Estado permiso: $status");
   return status == PermissionStatus.granted;
 }
 
 Future<bool> isServiceStatusEnabled() async {
   ServiceStatus serviceStatus = await LocationPermissions().checkServiceStatus();
-  print("Estado servicio: $serviceStatus");
+  //print("Estado servicio: $serviceStatus");
   return serviceStatus == ServiceStatus.enabled;
 }
 
