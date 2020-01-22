@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         if (snapshot.hasData) {
           return MaterialApp(
               title: 'Chilemergencias',
-              initialRoute: snapshot.data ? "information" : "error",
+              initialRoute: snapshot.data ? "home" : "error",
               routes: routes.routeMap(),
               debugShowCheckedModeBanner: false);
         } else {

@@ -58,6 +58,7 @@ flutter:
   assets:
     - assets/
     - data/
+    - assets/chilemergenciasIcon/
     - assets/iconsOnMap/
   #  - images/a_dot_ham.jpeg
 

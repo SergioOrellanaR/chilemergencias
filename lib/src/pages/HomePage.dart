@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
           _informationCard ?? Container()
         ]),
         floatingActionButton:
-            _mapController == null ? Container() : _createOperationButtons());
+            _mapController == null ? Container() : _createOperationButtons(context));
   }
 
   Column _goToClosest() {
@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _createOperationButtons() {
+  Widget _createOperationButtons(BuildContext context) {
     Listener zoomIn = _zoomButtonListener(isZoomIn: true);
     Listener zoomOut = _zoomButtonListener(isZoomIn: false);
 
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
           child: SizedBox(),
         ),
         SizedBox(
-          height: 100.0,
+          height: 115.0,
         ),
         zoomIn,
         SizedBox(
@@ -85,7 +85,16 @@ class _HomePageState extends State<HomePage> {
         Expanded(
           child: SizedBox(),
         ),
-        _centerGpsCamera(),
+        Row(children: <Widget>[
+          SizedBox(width: 30.0,),
+          _centerGpsCamera(),
+          Expanded(
+          child: SizedBox(),
+        ),
+          _goToInformation(context),
+        ],
+        )
+        
       ],
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -111,6 +120,7 @@ class _HomePageState extends State<HomePage> {
       elevation: 50.0,
       onPressed: () {},
       backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
+      heroTag: isZoomIn ? "btnZoomIn" : "btnZoomOut"
     );
   }
 
@@ -135,6 +145,18 @@ class _HomePageState extends State<HomePage> {
     _loopActiveOnZoom = false;
   }
 
+  FloatingActionButton _goToInformation(BuildContext context)
+  {
+    return FloatingActionButton(
+      heroTag: "btnInformation",
+      onPressed: () {
+        Navigator.pushNamed(context, "information");
+      },
+      child: Icon(Icons.info_outline, size: 35.0),
+      backgroundColor: Color.fromRGBO(80, 80, 80, 1.0)
+    );
+  }
+
   FloatingActionButton _centerGpsCamera() {
     return FloatingActionButton(
       onPressed: () async {
@@ -143,6 +165,7 @@ class _HomePageState extends State<HomePage> {
       },
       child: Icon(Icons.gps_fixed, size: 40.0),
       backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
+      heroTag: "btnCenterGPS"
     );
   }
 
@@ -319,6 +342,7 @@ class _HomePageState extends State<HomePage> {
         _loadInformationCard(closestId);
       },
       backgroundColor: utils.setColorByInstitutionCode(institutionCode),
+      heroTag: "btnGoTo$institutionCode",
     );
   }
 
@@ -405,4 +429,6 @@ class _HomePageState extends State<HomePage> {
     _mapController.dispose();
     super.dispose();
   }
+
+  
 }
