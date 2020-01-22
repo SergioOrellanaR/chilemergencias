@@ -87,11 +87,11 @@ class _HomePageState extends State<HomePage> {
         ),
         Row(children: <Widget>[
           SizedBox(width: 30.0,),
-          _centerGpsCamera(),
+          _goToInformation(context),
           Expanded(
           child: SizedBox(),
         ),
-          _goToInformation(context),
+          _centerGpsCamera(),
         ],
         )
         
