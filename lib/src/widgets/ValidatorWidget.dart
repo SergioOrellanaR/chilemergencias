@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:chilemergencias/src/controllers/ErrorHandler.dart';
 import 'package:flutter/material.dart';
-import 'package:location_permissions/location_permissions.dart';
 import 'package:chilemergencias/utils/utils.dart' as utils;
-
 
 class ValidatorWidget extends StatefulWidget {
   @override
@@ -17,23 +14,23 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
   String _lastErrorId;
   Map<String, bool> _mapValues = new Map<String, bool>();
   StreamController<int> streamController = StreamController<int>.broadcast();
-  Stream<int> timer =
-      Stream.periodic(Duration(seconds: 5), (int count) => count);
+  // Stream<int> timer =
+  //     Stream.periodic(Duration(seconds: 1), (int count) => count);
 
   @override
   void initState() {
     super.initState();
-    streamController.addStream(Stream.periodic(Duration(seconds: 5), (int count) => count));
-    //streamTest = Stream.periodic(Duration(seconds: 1), (int value) => _mapValues);
+    streamController
+        .addStream(Stream.periodic(Duration(seconds: 1), (int count) => count));
   }
 
   @override
   Widget build(BuildContext context) {
-    return _errorExist ? Container() : listenStream();
+    return _errorExist ? Container() : listenStream(context);
     //return (_errorExist ? _showAlert(context) : Container());
   }
 
-  _showAlert(BuildContext context, ErrorHandler error) {
+  showAlert(BuildContext context, ErrorHandler error) {
     showDialog(
         context: context,
         barrierDismissible: true,
@@ -44,18 +41,19 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
             title: Text(error.title),
             content: Column(children: <Widget>[
               Text(error.description),
-              SizedBox(height: 20.0,),
+              SizedBox(
+                height: 20.0,
+              ),
               Container(
-                child: Icon(error.iconData,
-                color: error.iconColor,
-                size: 100.0,
+                child: Icon(
+                  error.iconData,
+                  color: error.iconColor,
+                  size: 100.0,
                 ),
                 height: 150.0,
                 width: 150.0,
                 decoration: BoxDecoration(
-                  color: error.iconBackgroundColor,
-                  shape: BoxShape.circle
-                ),
+                    color: error.iconBackgroundColor, shape: BoxShape.circle),
               ),
             ], mainAxisSize: MainAxisSize.min),
             actions: <Widget>[
@@ -65,35 +63,40 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
                     _thereIsAOpenDialog = false;
                     _errorExist = false;
                     Navigator.of(context).pop();
+                    error.action(context);
                   })
             ],
           );
         });
   }
 
-  listenStream() {
+  listenStream(BuildContext appContext) {
     return StreamBuilder(
       stream: streamController.stream,
       builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
         if (snapshot.hasData) {
           _errorsInformation();
           _mapValues.forEach((key, value) {
-            if (value == false && _thereIsAOpenDialog == false && _lastErrorId != key) {
+            if (value == false && _thereIsAOpenDialog == false) {
               ErrorHandler error = utils.getErrorInformationByErrorCode(key);
-              _thereIsAOpenDialog = true;
-              _errorExist = true;
-              _lastErrorId = key;
-              Future.delayed(Duration.zero, () => _showAlert(context, error));
-            }
-            else if(value == true && _lastErrorId == key)
-            {
+              if (error.isPersistent || _lastErrorId != key) {
+                ErrorHandler error = utils.getErrorInformationByErrorCode(key);
+                _thereIsAOpenDialog = true;
+                _errorExist = true;
+                _lastErrorId = key;
+                Future.delayed(Duration.zero, () => showAlert(context, error));
+              }
+            } else if (value == true && _lastErrorId == key) {
               _lastErrorId = null;
             }
-          }
-          );
-          print(_mapValues["haveConectivity"].toString() +
-              " " +
-              snapshot.data.toString());
+          });
+
+          // if(_mapValues != null && theresNoErrors() && _thereWasAnError)
+          // {
+          //   RestartWidget.restartApp(context);
+            
+          // }
+
           return Container();
         } else {
           print("Snapshot sin data");
@@ -103,13 +106,25 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     );
   }
 
+  bool theresNoErrors()
+  {
+    bool thereAreNoErrors = true;
+
+    _mapValues.forEach((key,value)
+    {
+      if(value == false)
+      {
+        thereAreNoErrors = false;
+      }
+    });
+
+    return thereAreNoErrors;
+  }
+
   Future<Map<String, bool>> _errorsInformation() async {
-    //TODO: Checkear que GPS Tiene permisos, y si no, solicitarlos o pedir activar
-    //TODO: Checkear que GPS funcione.
-    //TODO: Que al activar o mejorar la condición de alguno de estos problemas la aplicación vuelva a cargar (Usar streams).
-    bool _isPermissionGranted = await _isPermissionStatusGranted();
-    bool _isStatusEnabled = await _isServiceStatusEnabled();
-    bool _haveConectivity = await _phoneHaveConectivity();
+    bool _isPermissionGranted = await utils.isPermissionStatusGranted();
+    bool _isStatusEnabled = await utils.isServiceStatusEnabled();
+    bool _haveConectivity = await utils.phoneHaveConectivity();
 
     Map<String, bool> errorsInformation = new Map<String, bool>();
 
@@ -121,28 +136,5 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     _mapValues = errorsInformation;
 
     return errorsInformation;
-  }
-
-  Future<bool> _isPermissionStatusGranted() async {
-    return await LocationPermissions().checkPermissionStatus() ==
-        PermissionStatus.granted;
-  }
-
-  Future<bool> _isServiceStatusEnabled() async {
-    return await LocationPermissions().checkServiceStatus() ==
-        ServiceStatus.enabled;
-  }
-
-  Future<bool> _phoneHaveConectivity() async {
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        return true;
-      } else {
-        return false;
-      }
-    } on SocketException catch (_) {
-      return false;
-    }
   }
 }

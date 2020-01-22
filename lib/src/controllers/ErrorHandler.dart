@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location_permissions/location_permissions.dart';
 
 Map<String, ErrorHandler> errorController = {
   "permissionGranted": ErrorHandler(
@@ -7,7 +8,15 @@ Map<String, ErrorHandler> errorController = {
           "Autorice a la aplicación para poder acceder a su ubicación o no podrá visualizar los servicios de urgencia mas cercanos.",
       iconData: Icons.no_encryption,
       iconColor: Colors.yellow,
-      iconBackgroundColor: Colors.orange),
+      iconBackgroundColor: Colors.orange,
+      isPersistent: true,
+      action: () async {
+        bool gotPermission = await LocationPermissions().requestPermissions() == PermissionStatus.granted;
+        if(!gotPermission)
+        {
+          await LocationPermissions().openAppSettings();
+        }
+      }),
   "statusEnabled": ErrorHandler(
       title: "Localización inactiva",
       description:
@@ -44,6 +53,8 @@ class ErrorHandler {
   IconData iconData;
   Color iconColor;
   Color iconBackgroundColor;
+  Function action = () async {};
+  bool isPersistent;
 
-  ErrorHandler({this.title, this.description, this.iconData, this.iconColor, this.iconBackgroundColor});
+  ErrorHandler({this.title, this.description, this.iconData, this.iconColor, this.iconBackgroundColor, this.action, this.isPersistent = false});
 }

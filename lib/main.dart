@@ -1,13 +1,11 @@
-import 'dart:io';
-
-import 'package:chilemergencias/utils/routes.dart' as routes;
 import 'package:flutter/material.dart';
 import 'package:location_permissions/location_permissions.dart';
+import 'package:chilemergencias/utils/utils.dart' as utils;
+import 'package:chilemergencias/utils/routes.dart' as routes;
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  //TODO: Controlar cuando se deniegue acceso a gps
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -32,40 +30,25 @@ class MyApp extends StatelessWidget {
     //TODO: Checkear que GPS Tiene permisos, y si no, solicitarlos o pedir activar
     //TODO: Checkear que GPS funcione.
     //TODO: Que al activar o mejorar la condición de alguno de estos problemas la aplicación vuelva a cargar (Usar streams).
-    bool _posPermission = await _isLocationStatusAndPermissionsEnabled();
-    bool _haveConectivity = await _phoneHaveConectivity();
-    //print("El teléfono " + (_haveConectivity ? "" : "no ") + "tiene conexión");  
-
-    if (_posPermission && _haveConectivity) {
+    bool _isPermissionGranted = await utils.isPermissionStatusGranted();
+    bool _isStatusEnabled = await utils.isServiceStatusEnabled();
+    bool _haveConectivity = await utils.phoneHaveConectivity();
+    
+    if(!_isPermissionGranted)
+    {
+      _isPermissionGranted = await LocationPermissions().requestPermissions() == PermissionStatus.granted;
+    }
+    // //print("El teléfono " + (_haveConectivity ? "" : "no ") + "tiene conexión");  
+    // print("Hay permiso: $_isPermissionGranted, Localización habilitada: $_isStatusEnabled, Hay conexión: $_haveConectivity");
+    if (_isPermissionGranted && _isStatusEnabled && _haveConectivity) {
       return true;
     } else {
       return false;
     }
   }
 
-  Future<bool> _isLocationStatusAndPermissionsEnabled() async {
-    PermissionStatus _permissionStatus =
-        await LocationPermissions().checkPermissionStatus();
-    ServiceStatus _serviceStatus =
-        await LocationPermissions().checkServiceStatus();
-    // print(
-    //     "Validando permiso de gps, su estado es: $_permissionStatus y el estado del servicio de localización es: $_serviceStatus");
-    return (_permissionStatus == PermissionStatus.granted &&
-        _serviceStatus == ServiceStatus.enabled);
-  }
-
-  Future<bool> _phoneHaveConectivity() async {
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    } on SocketException catch (_) {
-      return false;
-    }
-  }
+  Future<bool> openAppSettings() async
+  {
+    return await LocationPermissions().openAppSettings();
+  }  
 }
