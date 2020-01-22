@@ -39,16 +39,13 @@ class _ErrorAlertState extends State<ErrorAlert> {
         if (snapshot.hasData) {
           _errorsInformation();
           _theresNoError = theresNoErrors();
-          
-          if (_theresNoError) {
-            Timer.run(() {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                  (Route<dynamic> route) => false);
-            });
+
+          if (theresNoErrors()) {
+            _redirectToHomePage(context);
           } else {
-            _widget = ValidatorWidget(isStartUpValidation: true,);
+            _widget = ValidatorWidget(
+              isStartUpValidation: true,
+            );
           }
 
           return _widget;
@@ -59,20 +56,31 @@ class _ErrorAlertState extends State<ErrorAlert> {
     );
   }
 
+  void _redirectToHomePage(BuildContext context) {
+    return Timer.run(() {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+          (Route<dynamic> route) => false);
+    });
+  }
+
   bool theresNoErrors() {
-    bool thereAreNoErrors = true;
+    bool errorsFound = true;
 
     if (_mapValues.length > 0) {
       _mapValues.forEach((key, value) {
         if (value == false) {
-          thereAreNoErrors = false;
+          errorsFound = false;
         }
       });
     } else {
-      thereAreNoErrors = false;
+      errorsFound = false;
     }
 
-    return thereAreNoErrors;
+    _theresNoError = errorsFound;
+
+    return _theresNoError;
   }
 
   Future<Map<String, bool>> _errorsInformation() async {

@@ -18,6 +18,7 @@ Map<String, ErrorHandler> errorController = {
           await LocationPermissions().openAppSettings();
         }
       }),
+
   "statusEnabled": ErrorHandler(
       title: "Localización inactiva",
       description:
@@ -27,6 +28,7 @@ Map<String, ErrorHandler> errorController = {
       isPersistentOnStartUp: true,
       isPersistent: false,
       iconBackgroundColor: Colors.grey),
+
   "haveConectivity": ErrorHandler(
       title: "Teléfono sin conexión",
       description:
@@ -45,6 +47,7 @@ Map<String, ErrorHandler> errorController = {
       iconData: Icons.gps_off,
       iconColor: Colors.blue,
       iconBackgroundColor: Colors.white),
+
   "unknownError": ErrorHandler(
       title: "Error desconocido",
       description:

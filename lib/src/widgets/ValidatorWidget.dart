@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:chilemergencias/utils/utils.dart' as utils;
 
 class ValidatorWidget extends StatefulWidget {
-
   final bool isStartUpValidation;
 
   ValidatorWidget({this.isStartUpValidation = false});
@@ -35,8 +34,7 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     //return (_errorExist ? _showAlert(context) : Container());
   }
 
-  disposeStream()
-  {
+  disposeStream() {
     streamController?.close();
   }
 
@@ -45,37 +43,45 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
         context: context,
         barrierDismissible: false,
         builder: (context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)),
-            title: Text(error.title),
-            content: Column(children: <Widget>[
-              Text(error.description),
-              SizedBox(
-                height: 20.0,
-              ),
-              Container(
-                child: Icon(
-                  error.iconData,
-                  color: error.iconColor,
-                  size: 100.0,
-                ),
-                height: 150.0,
-                width: 150.0,
-                decoration: BoxDecoration(
-                    color: error.iconBackgroundColor, shape: BoxShape.circle),
-              ),
-            ], mainAxisSize: MainAxisSize.min),
-            actions: <Widget>[
-              FlatButton(
-                  child: Text("OK"),
-                  onPressed: () {
-                    _thereIsAOpenDialog = false;
-                    _errorExist = false;
-                    Navigator.of(context).pop();
-                  })
-            ],
-          );
+          return _alertDialog(error, context);
+        });
+  }
+
+  AlertDialog _alertDialog(ErrorHandler error, BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      title: Text(error.title),
+      content: _alertDialogContent(error),
+      actions: <Widget>[_okButtonOnDialog(context)],
+    );
+  }
+
+  Column _alertDialogContent(ErrorHandler error) {
+    return Column(children: <Widget>[
+      Text(error.description, textAlign: TextAlign.justify),
+      Expanded(
+        child: Container(
+          child: Icon(
+            error.iconData,
+            color: error.iconColor,
+            size: 100.0,
+          ),
+          height: 150.0,
+          width: 150.0,
+          decoration: BoxDecoration(
+              color: error.iconBackgroundColor, shape: BoxShape.circle),
+        ),
+      ),
+    ], mainAxisSize: MainAxisSize.min);
+  }
+
+  FlatButton _okButtonOnDialog(BuildContext context) {
+    return FlatButton(
+        child: Text("OK"),
+        onPressed: () {
+          _thereIsAOpenDialog = false;
+          _errorExist = false;
+          Navigator.of(context).pop();
         });
   }
 
@@ -85,19 +91,7 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
       builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
         if (snapshot.hasData) {
           _errorsInformation();
-          _mapValues.forEach((key, value) {
-            if (value == false && _thereIsAOpenDialog == false) {
-              ErrorHandler error = utils.getErrorInformationByErrorCode(key);
-              if (error.isPersistent || _lastErrorId != key || _isPersistentOnStartUp(error)) {
-                _thereIsAOpenDialog = true;
-                _errorExist = true;
-                _lastErrorId = key;
-                Future.delayed(Duration.zero, () => showAlert(context, error));
-              }
-            } else if (value == true && _lastErrorId == key) {
-              _lastErrorId = null;
-            }
-          });
+          _validateActualErrors(context);
           return Container();
         } else {
           // print("Snapshot sin data");
@@ -107,32 +101,34 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     );
   }
 
-  bool _isPersistentOnStartUp(ErrorHandler error)
-  {
+  void _validateActualErrors(BuildContext context) {
+    return _mapValues.forEach((key, value) {
+      if (value == false && _thereIsAOpenDialog == false) {
+        ErrorHandler error = utils.getErrorInformationByErrorCode(key);
+        if (_showDisplayAlert(error, key)) {
+          _thereIsAOpenDialog = true;
+          _errorExist = true;
+          _lastErrorId = key;
+          Future.delayed(Duration.zero, () => showAlert(context, error));
+        }
+      } else if (value == true && _lastErrorId == key) {
+        _lastErrorId = null;
+      }
+    });
+  }
+
+  bool _showDisplayAlert(ErrorHandler error, String mapKey) {
+    return error.isPersistent ||
+        _lastErrorId != mapKey ||
+        _isPersistentOnStartUp(error);
+  }
+
+  bool _isPersistentOnStartUp(ErrorHandler error) {
     bool value = false;
-    if(widget.isStartUpValidation && error.isPersistentOnStartUp)
-    {
+    if (widget.isStartUpValidation && error.isPersistentOnStartUp) {
       value = true;
     }
     return value;
-  }
-
-  bool theresNoErrors() {
-    bool thereAreNoErrors = true;
-
-    if (_mapValues.length > 0) {
-      _mapValues.forEach((key, value) {
-        if (value == false) {
-          thereAreNoErrors = false;
-        }
-      });
-    }
-    else
-    {
-      thereAreNoErrors = false;
-    }
-
-    return thereAreNoErrors;
   }
 
   Future<Map<String, bool>> _errorsInformation() async {
