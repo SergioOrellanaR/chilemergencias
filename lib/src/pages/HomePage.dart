@@ -3,6 +3,7 @@ import 'package:chilemergencias/src/widgets/InformationCard.dart';
 import 'package:chilemergencias/src/widgets/ValidatorWidget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:latlong/latlong.dart' as latlong;
 import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    _lockOrientationToPortrait();
     return Scaffold(
         body: Stack(children: <Widget>[
           mapWithStreaming(),
@@ -48,6 +50,14 @@ class _HomePageState extends State<HomePage> {
         ]),
         floatingActionButton:
             _mapController == null ? Container() : _createOperationButtons(context));
+  }
+
+  Future<void> _lockOrientationToPortrait() {
+    //TODO: Eliminar método cuando mapbox resuelva error.
+    return SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   Column _goToClosest() {
@@ -246,14 +256,12 @@ class _HomePageState extends State<HomePage> {
     return LatLng(institution.latitude, institution.longitude);
   }
 
-  //TODO: Controlar que map controller no sea null mientras se tenga data.
   Widget drawInstitutionsOnMap() {
     return FutureBuilder(
       future: provider.allDataToMap(),
       builder:
           (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
         if (snapshot.hasData) {
-          //TODO: verificar que future no esté dando problemas por asignación a variable simple.
           _allData = snapshot.data;
           _setDistanceBetweenPositionAndInstitutions();
           _closestThreeOfEachInstitutionId = _loadClosestThreeOfEach();

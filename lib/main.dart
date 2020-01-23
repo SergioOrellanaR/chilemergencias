@@ -27,9 +27,6 @@ class MyApp extends StatelessWidget {
   }
 
   Future<bool> _permissionsAndFunctionalitiesAreEnabled() async {
-    //TODO: Checkear que GPS Tiene permisos, y si no, solicitarlos o pedir activar
-    //TODO: Checkear que GPS funcione.
-    //TODO: Que al activar o mejorar la condición de alguno de estos problemas la aplicación vuelva a cargar (Usar streams).
     bool _isPermissionGranted = await utils.isPermissionStatusGranted();
     bool _isStatusEnabled = await utils.isServiceStatusEnabled();
     bool _haveConectivity = await utils.phoneHaveConectivity();
@@ -38,8 +35,6 @@ class MyApp extends StatelessWidget {
     {
       _isPermissionGranted = await LocationPermissions().requestPermissions() == PermissionStatus.granted;
     }
-    // //print("El teléfono " + (_haveConectivity ? "" : "no ") + "tiene conexión");  
-    // print("Hay permiso: $_isPermissionGranted, Localización habilitada: $_isStatusEnabled, Hay conexión: $_haveConectivity");
     if (_isPermissionGranted && _isStatusEnabled && _haveConectivity) {
       return true;
     } else {

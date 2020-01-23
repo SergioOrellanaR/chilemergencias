@@ -22,8 +22,8 @@ class InformationPage extends StatelessWidget {
       _donate(),
       SizedBox(height: 30.0),
       _contactMe(),
+      SizedBox(height: 100.0),
     ];
-
     return bodyList;
   }
 
@@ -51,7 +51,7 @@ class InformationPage extends StatelessWidget {
 
   Widget _donate() {
     return _card(
-        title: "Si la aplicación te ha servido, puedes invitarme a un café!",
+        title: "Si la aplicación te ha servido, puedes invitarme a un café :)",
         description:
             "Para que usted pueda responder a la urgencia de la forma más rápida posible es que esta aplicación no contiene anuncios ni cobros, sin embargo, si la aplicación le ha servido, puede invitarme a un café (por 1500 pesos) presionando en el siguiente ícono: ",
         haveIcon: true);
@@ -59,13 +59,13 @@ class InformationPage extends StatelessWidget {
 
   Widget _contactMe() {
     return _card(
-      title: "Tambien puedes contactarme directamente!",
+      title: "¡Tambien puedes contactarme directamente!",
       description: "Si has encontrado un error en la aplicación, compartir como te sirvió la app, hablar de negocios o simplemente deseas dar retroalimentación puedes contactarme al siguiente email: ",
       haveEmail: true
     );
   }
 
-  Widget _card({String title, String description, bool haveIcon = false, bool haveEmail = false}) {
+  Widget _card({String title, String description, bool haveIcon = false, bool haveEmail = false, Color color}) {
     return Card(
       child: Column(children: <Widget>[
         ListTile(
@@ -88,7 +88,7 @@ class InformationPage extends StatelessWidget {
       color: Colors.white,
       elevation: 6.0,
       semanticContainer: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))
     );
   }
 
