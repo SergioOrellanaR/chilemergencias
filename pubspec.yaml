@@ -22,7 +22,7 @@ dependencies:
   latlong: ^0.6.1
   location: ^2.3.5
   mapbox_gl: ^0.0.5
-  flutter_map:
+  gradient_widgets: ^0.5.1
   flutter:
     sdk: flutter
 
