@@ -23,6 +23,7 @@ dependencies:
   location: ^2.3.5
   mapbox_gl: ^0.0.5
   gradient_widgets: ^0.5.1
+  in_app_purchase: ^0.3.0+1
   flutter:
     sdk: flutter
 

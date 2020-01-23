@@ -27,7 +27,8 @@ Map<String, ErrorHandler> errorController = {
       iconColor: Colors.red,
       isPersistentOnStartUp: true,
       isPersistent: false,
-      iconBackgroundColor: Colors.grey),
+      iconBackgroundColor: Colors.grey,
+      action: (){}),
 
   "haveConectivity": ErrorHandler(
       title: "Teléfono sin conexión",
@@ -46,7 +47,8 @@ Map<String, ErrorHandler> errorController = {
           "Por favor, active la funcionalidad de GPS en su dispositivo.",
       iconData: Icons.gps_off,
       iconColor: Colors.blue,
-      iconBackgroundColor: Colors.white),
+      iconBackgroundColor: Colors.white,
+      action: (){},),
 
   "unknownError": ErrorHandler(
       title: "Error desconocido",
@@ -54,7 +56,17 @@ Map<String, ErrorHandler> errorController = {
           "Ha ocurrido un error desconocido, pruebe a reiniciar la aplicación.",
       iconData: Icons.warning,
       iconColor: Colors.yellow,
-      iconBackgroundColor: Colors.orange)
+      iconBackgroundColor: Colors.orange,
+      action: (){},),
+  
+  "unreachableStore": ErrorHandler(
+    title: "La tienda no está disponible en estos momentos",
+    description: "No existe acceso a la tienda, verifique que tiene conexión a internet y tiene una cuenta vinculada a su dispositivo.",
+    iconData: Icons.sentiment_dissatisfied,
+    iconColor: Color.fromRGBO(153, 249, 240, 1.0),
+    iconBackgroundColor: Color.fromRGBO(118, 145, 215, 1.0),
+    action: (){} 
+  )
 };
 
 class ErrorHandler {

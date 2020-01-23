@@ -4,12 +4,12 @@ import 'package:chilemergencias/src/widgets/ValidatorWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:chilemergencias/utils/utils.dart' as utils;
 
-class ErrorAlert extends StatefulWidget {
+class ErrorPage extends StatefulWidget {
   @override
-  _ErrorAlertState createState() => _ErrorAlertState();
+  _ErrorPageState createState() => _ErrorPageState();
 }
 
-class _ErrorAlertState extends State<ErrorAlert> {
+class _ErrorPageState extends State<ErrorPage> {
   bool _theresNoError;
   Widget _widget = Container();
   Map<String, bool> _mapValues = new Map<String, bool>();
