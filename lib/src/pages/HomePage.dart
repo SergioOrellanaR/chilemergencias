@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   InformationCard _informationCard;
   bool _buttonPressedonZoom = false;
   bool _loopActiveOnZoom = false;
+  Size _screenSize;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     _lockOrientationToPortrait();
+    _screenSize = MediaQuery.of(context).size;
     return Scaffold(
         body: Stack(children: <Widget>[
           mapWithStreaming(),
@@ -280,7 +282,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<Symbol> _addSymbol(String iconImage, LatLng latLng) async {
     return _mapController.addSymbol(SymbolOptions(
-        geometry: latLng, iconImage: iconImage, draggable: false));
+        geometry: latLng, iconImage: iconImage, draggable: false, iconSize: _screenSize.height * 0.002));
   }
 
   void _addMarkers() async {

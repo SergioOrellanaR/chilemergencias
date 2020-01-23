@@ -115,7 +115,7 @@ TextStyle setTitleFontSize(int length) {
   } else if (length < 50) {
     _fontSize = 10.5;
   } else {
-    _fontSize = 8.0;
+    _fontSize = 6.0;
   }
 
   return TextStyle(fontSize: _fontSize, fontWeight: FontWeight.bold);

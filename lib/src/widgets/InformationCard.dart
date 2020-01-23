@@ -44,7 +44,8 @@ class _InformationCardState extends State<InformationCard> {
       child: SafeArea(
         child: Container(
           child: _cardData(context, orientationIsPortrait),
-          height: (orientationIsPortrait) ? 150.0 : 105.0,
+          height: (orientationIsPortrait) ? 165.0 : 105.0,
+          padding: EdgeInsets.only(top: 20.0),
         ),
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
@@ -54,9 +55,10 @@ class _InformationCardState extends State<InformationCard> {
 
   Column _cardData(BuildContext context, bool orientationIsPortrait) {
     return Column(children: <Widget>[
+      // SizedBox(height: 25.0),
       ListTile(
         leading: _leadingImage(),
-        title: _titleRow(context),
+        title: _titleRow(),
         subtitle: _informationColumn(context, orientationIsPortrait),
       ),
       (orientationIsPortrait) ? _portraitActionButtons() : Container(),
@@ -119,12 +121,11 @@ class _InformationCardState extends State<InformationCard> {
     );
   }
 
-  Row _titleRow(BuildContext context) {
+  Row _titleRow() {
     return Row(
       children: <Widget>[
-        Text(widget.name, style: utils.setTitleFontSize(widget.name.length)),
-        Expanded(child: SizedBox()),
-        GestureDetector(
+        Expanded(child: Text(widget.name, style: utils.setTitleFontSize(widget.name.length))),
+        GestureDetector(     
             onTap: () {
               setState(() {
                 globals.isInformationCardVisible = false;
@@ -143,7 +144,7 @@ class _InformationCardState extends State<InformationCard> {
       return Column(
         children: <Widget>[
           SizedBox(
-            height: 15.0,
+            height: 5.0,
           ),
           Text(addressAndCommune(),
               style: utils.setAddressFontSize(addressAndCommune().length)),
