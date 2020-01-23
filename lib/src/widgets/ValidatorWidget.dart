@@ -52,7 +52,7 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       title: Text(error.title),
       content: _alertDialogContent(error),
-      actions: <Widget>[_okButtonOnDialog(context)],
+      actions: <Widget>[_okButtonOnDialog(context, error)],
     );
   }
 
@@ -75,13 +75,14 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     ], mainAxisSize: MainAxisSize.min);
   }
 
-  FlatButton _okButtonOnDialog(BuildContext context) {
+  FlatButton _okButtonOnDialog(BuildContext context, ErrorHandler error) {
     return FlatButton(
         child: Text("OK"),
         onPressed: () {
           _thereIsAOpenDialog = false;
           _errorExist = false;
           Navigator.of(context).pop();
+          error.action();
         });
   }
 
