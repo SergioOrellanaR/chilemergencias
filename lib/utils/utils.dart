@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chilemergencias/src/controllers/ErrorHandler.dart' as errors;
+import 'package:chilemergencias/src/controllers/AlertHandler.dart' as alerts;
 import 'package:flutter/material.dart';
 import 'package:location_permissions/location_permissions.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -130,11 +130,11 @@ TextStyle setAddressFontSize(int length) {
   return TextStyle(fontSize: _fontSize);
 }
 
-errors.ErrorHandler getErrorInformationByErrorCode(String errorCode) {
+alerts.AlertHandler getErrorInformationByErrorCode(String errorCode) {
   try {
-    return errors.errorController[errorCode];
+    return alerts.alertController[errorCode];
   } catch (e) {
-    return errors.errorController["unknownError"];
+    return alerts.alertController["unknownError"];
   }
 }
 

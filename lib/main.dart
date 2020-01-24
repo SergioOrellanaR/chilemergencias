@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:location_permissions/location_permissions.dart';
 import 'package:chilemergencias/utils/utils.dart' as utils;
 import 'package:chilemergencias/utils/routes.dart' as routes;
+import 'package:in_app_purchase/in_app_purchase.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  InAppPurchaseConnection.enablePendingPurchases();
+  runApp(MyApp());
+} 
 
 class MyApp extends StatelessWidget {
   @override

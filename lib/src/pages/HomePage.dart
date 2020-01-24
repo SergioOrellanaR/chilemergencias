@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<Symbol> _addSymbol(String iconImage, LatLng latLng) async {
     return _mapController.addSymbol(SymbolOptions(
-        geometry: latLng, iconImage: iconImage, draggable: false, iconSize: _screenSize.height * 0.002));
+        geometry: latLng, iconImage: iconImage, draggable: false, iconSize: _screenSize.height * 0.0014));
   }
 
   void _addMarkers() async {

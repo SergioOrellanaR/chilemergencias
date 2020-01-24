@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:chilemergencias/src/controllers/ErrorHandler.dart';
+import 'package:chilemergencias/src/controllers/AlertHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:chilemergencias/utils/utils.dart' as utils;
 
@@ -38,7 +38,7 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     streamController?.close();
   }
 
-  showAlert(BuildContext context, ErrorHandler error) {
+  showAlert(BuildContext context, AlertHandler error) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -47,7 +47,7 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
         });
   }
 
-  AlertDialog _alertDialog(ErrorHandler error, BuildContext context) {
+  AlertDialog _alertDialog(AlertHandler error, BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       title: Text(error.title),
@@ -56,7 +56,7 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     );
   }
 
-  Column _alertDialogContent(ErrorHandler error) {
+  Column _alertDialogContent(AlertHandler error) {
     return Column(children: <Widget>[
       Text(error.description, textAlign: TextAlign.justify),
       Expanded(
@@ -75,7 +75,7 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     ], mainAxisSize: MainAxisSize.min);
   }
 
-  FlatButton _okButtonOnDialog(BuildContext context, ErrorHandler error) {
+  FlatButton _okButtonOnDialog(BuildContext context, AlertHandler error) {
     return FlatButton(
         child: Text("OK"),
         onPressed: () {
@@ -105,7 +105,7 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
   void _validateActualErrors(BuildContext context) {
     return _mapValues.forEach((key, value) {
       if (value == false && _thereIsAOpenDialog == false) {
-        ErrorHandler error = utils.getErrorInformationByErrorCode(key);
+        AlertHandler error = utils.getErrorInformationByErrorCode(key);
         if (_showDisplayAlert(error, key)) {
           _thereIsAOpenDialog = true;
           _errorExist = true;
@@ -118,13 +118,13 @@ class _ValidatorWidgetState extends State<ValidatorWidget> {
     });
   }
 
-  bool _showDisplayAlert(ErrorHandler error, String mapKey) {
+  bool _showDisplayAlert(AlertHandler error, String mapKey) {
     return error.isPersistent ||
         _lastErrorId != mapKey ||
         _isPersistentOnStartUp(error);
   }
 
-  bool _isPersistentOnStartUp(ErrorHandler error) {
+  bool _isPersistentOnStartUp(AlertHandler error) {
     bool value = false;
     if (widget.isStartUpValidation && error.isPersistentOnStartUp) {
       value = true;

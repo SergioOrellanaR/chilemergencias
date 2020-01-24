@@ -1,10 +1,12 @@
 import 'dart:async';
-import 'package:chilemergencias/src/controllers/ErrorHandler.dart';
+import 'dart:io';
+import 'package:chilemergencias/src/controllers/AlertHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 class InformationPage extends StatefulWidget {
+  final String coffeeId = "serorellanar_chilemergencias_coffee";
   @override
   _InformationPageState createState() => _InformationPageState();
 }
@@ -26,7 +28,8 @@ class _InformationPageState extends State<InformationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: _appBar(),
-        body: Stack(children: <Widget>[_background(), _bodyInformation(context)]),
+        body:
+            Stack(children: <Widget>[_background(), _bodyInformation(context)]),
         backgroundColor: Colors.white,
         bottomSheet: _footer());
   }
@@ -123,14 +126,12 @@ class _InformationPageState extends State<InformationPage> {
   }
 
   Widget _card(
-      {
-      BuildContext context,
+      {BuildContext context,
       String title,
       String description,
       bool haveIcon = false,
       bool haveEmail = false,
       Gradient gradient}) {
-    
     return GradientCard(
         child: Column(children: <Widget>[
           _cardListTile(title, description, context, haveIcon, haveEmail),
@@ -144,35 +145,36 @@ class _InformationPageState extends State<InformationPage> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)));
   }
 
-  ListTile _cardListTile(String title, String description, BuildContext context, bool haveIcon, bool haveEmail) {
+  ListTile _cardListTile(String title, String description, BuildContext context,
+      bool haveIcon, bool haveEmail) {
     return ListTile(
-          title: Text(title, textAlign: TextAlign.center),
-          subtitle: Column(
-            children: <Widget>[
-              SizedBox(height: 10),
-              Text(description, textAlign: TextAlign.justify),
-              SizedBox(height: 5),
-              _donateIcon(context ,haveIcon),
-              _email(haveEmail)
-            ],
-          ),
-          isThreeLine: true,
-        );
+      title: Text(title, textAlign: TextAlign.center),
+      subtitle: Column(
+        children: <Widget>[
+          SizedBox(height: 10),
+          Text(description, textAlign: TextAlign.justify),
+          SizedBox(height: 5),
+          _donateIcon(context, haveIcon),
+          _email(haveEmail)
+        ],
+      ),
+      isThreeLine: true,
+    );
   }
 
   Widget _donateIcon(BuildContext context, bool haveIcon) {
     Container iconBuild = Container(
       child: GestureDetector(
           onTap: () async {
-            //TODO: Agregar botón de donación.
-            bool canAccessToStore = await _storeIsAvailable();
-            if (canAccessToStore)
-            {
-
-            }
-            else
-            {
-              _displayErrorCard(context, errorController["unreachableStore"]);
+            try {
+              bool canAccessToStore = await _storeIsAvailable();
+              if (canAccessToStore) {
+                await _payCoffee();
+              } else {
+                _displayErrorCard(context, alertController["unreachableStore"]);
+              }
+            } catch (e) {
+              _displayErrorCard(context, alertController["unknownError"]);
             }
           },
           child: Icon(
@@ -189,12 +191,26 @@ class _InformationPageState extends State<InformationPage> {
     return haveIcon ? iconBuild : Container();
   }
 
-  void _handlePurchaseUpdates(purchases) {
-    
+  void _handlePurchaseUpdates(List<PurchaseDetails> purchaseDetailsList) {
+    purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+      if (purchaseDetails.status == PurchaseStatus.purchased) {
+        if (purchaseDetails.status == PurchaseStatus.purchased) {
+          //OK
+        } else if (purchaseDetails.status == PurchaseStatus.error) {
+          //ERROR
+          return;
+        }
+      }
+
+      if (purchaseDetails.pendingCompletePurchase) {
+        await InAppPurchaseConnection.instance
+            .completePurchase(purchaseDetails);
+      }
+    });
+
   }
 
-  Future<bool> _storeIsAvailable() async
-  {
+  Future<bool> _storeIsAvailable() async {
     return await InAppPurchaseConnection.instance.isAvailable();
   }
 
@@ -211,7 +227,7 @@ class _InformationPageState extends State<InformationPage> {
   _footer() {
     return Container(
       child: Row(children: <Widget>[
-        Text(" Developed by: Sergio Orellana Rey"),
+        Text(" Developed by: Sergio Orellana Rey - V1.0.0"),
         Expanded(child: SizedBox()),
         Image(
           image: AssetImage("assets/chilemergenciasIcon/OrellanaLogo.png"),
@@ -233,12 +249,11 @@ class _InformationPageState extends State<InformationPage> {
     super.dispose();
   }
 
-  void _displayErrorCard(BuildContext context, ErrorHandler error) 
-  {
+  void _displayErrorCard(BuildContext context, AlertHandler error) {
     showAlert(context, error);
   }
 
-  showAlert(BuildContext context, ErrorHandler error) {
+  showAlert(BuildContext context, AlertHandler error) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -247,7 +262,7 @@ class _InformationPageState extends State<InformationPage> {
         });
   }
 
-  AlertDialog _alertDialog(ErrorHandler error, BuildContext context) {
+  AlertDialog _alertDialog(AlertHandler error, BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       title: Text(error.title),
@@ -256,7 +271,7 @@ class _InformationPageState extends State<InformationPage> {
     );
   }
 
-  Column _alertDialogContent(ErrorHandler error) {
+  Column _alertDialogContent(AlertHandler error) {
     return Column(children: <Widget>[
       Text(error.description, textAlign: TextAlign.justify),
       Expanded(
@@ -275,12 +290,28 @@ class _InformationPageState extends State<InformationPage> {
     ], mainAxisSize: MainAxisSize.min);
   }
 
-  FlatButton _okButtonOnDialog(BuildContext context, ErrorHandler error) {
+  FlatButton _okButtonOnDialog(BuildContext context, AlertHandler error) {
     return FlatButton(
         child: Text("OK"),
         onPressed: () {
           Navigator.of(context).pop();
           error.action();
         });
+  }
+
+  Future<bool> _payCoffee() async {
+    if (Platform.isAndroid) {
+      Set<String> _productsId = <String>[widget.coffeeId].toSet();
+      final ProductDetailsResponse response = await InAppPurchaseConnection
+          .instance
+          .queryProductDetails(_productsId);
+      PurchaseParam purchaseParam =
+          PurchaseParam(productDetails: response.productDetails[0]);
+      InAppPurchaseConnection.instance
+          .buyConsumable(purchaseParam: purchaseParam, autoConsume: true);
+    } else {
+      //TODO: Programar compra mediante AppStore
+    }
+    return true;
   }
 }
