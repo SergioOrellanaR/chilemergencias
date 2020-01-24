@@ -1,0 +1,62 @@
+[
+  {
+    "address": "Vicuña Mackenna 802",
+    "commune": "Arica",
+    "country": "Chile",
+    "latitude": -18.480781,
+    "longitude": -70.311448,
+    "name": "Cuerpo de Bomberos de Arica",
+    "phone": "+56582257614",
+    "region": "Región de Arica y Parinacota"
+  },
+  {
+    "address": "Los Alamos 3007",
+    "commune": "Alto Hospicio",
+    "country": "Chile",
+    "latitude": -20.268843,
+    "longitude": -70.104428,
+    "name": "Cuerpo de Bomberos de Santa Rosa De Huantajaya",
+    "phone": "+56572499871",
+    "region": "Región de Tarapacá"
+  },
+  {
+    "address": "Noruega S/N",
+    "commune": "Alto Hospicio",
+    "country": "Chile",
+    "latitude": -20.294159,
+    "longitude": -70.1043,
+    "name": "Cuerpo de Bomberos de Alto Hospicio",
+    "phone": "+56572499390",
+    "region": "Región de Tarapacá"
+  },
+  {
+    "address": "Arturo Prat S/N",
+    "commune": "Camiña",
+    "country": "Chile",
+    "latitude": -19.312723,
+    "longitude": -69.425425,
+    "name": "Cuerpo de Bomberos de Camiña",
+    "phone": "+56562069541",
+    "region": "Región de Tarapacá"
+  },
+  {
+    "address": "Eleuterio Ramirez S/N",
+    "commune": "Huara",
+    "country": "Chile",
+    "latitude": -19.996948,
+    "longitude": -69.772806,
+    "name": "Cuerpo de Bomberos de Huara",
+    "phone": "+56572752550",
+    "region": "Región de Tarapacá"
+  },
+  {
+    "address": "Bolívar 414",
+    "commune": "Iquique",
+    "country": "Chile",
+    "latitude": -20.21241,
+    "longitude": -70.152029,
+    "name": "Cuerpo de Bomberos de Iquique",
+    "phone": "+56572413166",
+    "region": "Región de Tarapacá"
+  }
+]

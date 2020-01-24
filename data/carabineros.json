@@ -1,0 +1,74 @@
+[
+  {
+    "address": "AVDA. SANTA MARIA N° 900",
+    "commune": "ARICA",
+    "country": "Chile",
+    "latitude": -18.478040,
+    "longitude": -70.311360,
+    "name": "1RA. COMISARÍA ARICA",
+    "type": "Comisaría",
+    "phone": "+56582458081",
+    "region": "XV ARICA Y PARINACOTA",
+    "isRural": false
+  },
+  {
+    "address": "CALLE RIQUELME N° 298",
+    "commune": "PUTRE",
+    "country": "Chile",
+    "latitude":-18.195074,
+    "longitude":-69.559155,
+    "name": "2DA. COMISARÍA PUTRE",
+    "type": "Comisaría",
+    "phone": "+56582458101",
+    "region": "XV ARICA Y PARINACOTA",
+    "isRural": false
+  },
+  {
+    "address": "AVDA LOA Nº 1475",
+    "commune": "ARICA",
+    "country": "Chile",
+    "latitude": -18.470575,
+    "longitude":-70.293962,
+    "name": "3RA. COMISARÍA ARICA",
+    "type": "Comisaría",
+    "phone": "+56582458132",
+    "region": "XV ARICA Y PARINACOTA",
+    "isRural": false
+  },
+  {
+    "address": "CALLE ANDALIEN Nº 837",
+    "commune": "ARICA",
+    "country": "Chile",
+    "latitude":-18.446608,
+    "longitude":-70.293542,
+    "name": "SUBCOMISARÍA CHINCHORRO NORTE",
+    "type": "Subcomisaría",
+    "phone": "+56582458156",
+    "region": "XV ARICA Y PARINACOTA",
+    "isRural": false
+  },
+  {
+    "address": "CALLE 7 DE JUNIO S/N LOCALIDAD DE CODPA",
+    "commune": "CAMARONES",
+    "country": "Chile",
+    "latitude":-18.832678,
+    "longitude":-69.744058,
+    "name": "RETEN CODPA",
+    "type": "Retén",
+    "phone": "+56582458163",
+    "region": "XV ARICA Y PARINACOTA",
+    "isRural": false
+  },
+  {
+    "address": "CALLE 21 DE MAYO S/N KM. 70 LINEA FERREA ARICA LA PAZ",
+    "commune": "ARICA",
+    "country": "Chile",
+    "latitude":-18.477684,
+    "longitude":-70.312494,
+    "name": "RETEN CENTRAL (F)",
+    "type": "Retén",
+    "phone": "+56582458154",
+    "region": "XV ARICA Y PARINACOTA",
+    "isRural": false
+  }
+]

@@ -47,7 +47,7 @@ android {
         applicationId "com.serorellanar.chilemergencias"
         minSdkVersion 20
         targetSdkVersion 28
-        versionCode 1
+        versionCode 2
         versionName "Beta 1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,7 +56,7 @@ android {
        release {
            keyAlias keystoreProperties['keyAlias']
            keyPassword keystoreProperties['keyPassword']
-           storeFile file("C:\\Users\\Sergio Orellana\\Desktop\\Desarrollo\\Utilidades\\key.jks")
+           storeFile file(['storeFile'])
            storePassword keystoreProperties['storePassword']
        }
    }

@@ -1,0 +1,68 @@
+[
+	{
+    	"address": "Avenida Las Torres 2699",
+    	"commune": "Arica",
+    	"country": "Chile",
+    	"latitude":-18.484118, 
+    	"longitude":-70.282360,
+    	"name": "SAR EU Iris Véliz Hume",
+    	"type": "SAR",
+    	"phone": "+56800500102",
+    	"region": "XV ARICA Y PARINACOTA" 
+	},
+	{
+    	"address": "18 de Septiembre 1000",
+    	"commune": "Arica",
+    	"country": "Chile",
+    	"latitude":-18.482495, 
+    	"longitude":-70.313080,
+    	"name": "Hospital Dr. Juan Noé Crevanni",
+    	"type": "Hospital",
+    	"phone": "+56582204592",
+    	"region": "XV ARICA Y PARINACOTA" 
+	},
+	{
+		"address": "Cancha Rayada 4149",
+		"commune": "Arica",
+		"country": "Chile",
+		"latitude":-18.437939, 
+		"longitude":-70.290938,
+		"name": "Cesfam Dr. Amador Neghme Rodríguez - Arica",
+		"type": "CESFAM",
+		"phone": "+56582382199",
+		"region": "XV ARICA Y PARINACOTA"  
+	},
+	{
+    	"address": "Naciones Unidas Nº 3080",
+    	"commune": "Iquique",
+    	"country": "Chile",
+    	"latitude":-20.287255, 
+    	"longitude":-70.103789,
+    	"name": "Cesfam General Urbano Dr. Héctor Reyno Gutiérrez",
+    	"type": "CESFAM",
+    	"phone": "+56572495700",
+    	"region": "I TARAPACÁ" 
+	},
+	{
+    	"address": "Av. Heroes de la Concepción 502",
+    	"commune": "Iquique",
+    	"country": "Chile",
+    	"latitude":-20.214133, 
+    	"longitude":-70.138475,
+    	"name": "Hospital Dr. Ernesto Torres Galdames",
+    	"type": "Hospital",
+    	"phone": "+5657415555",
+    	"region": "I TARAPACÁ" 
+	},
+	{
+    	"address": "Av. los Alamos S/N",
+    	"commune": "Alto Hospicio",
+    	"country": "Chile",
+    	"latitude":-20.264869, 
+    	"longitude":-70.097624,
+    	"name": "SAPU-Alto Hospicio - La Pampa",
+    	"type": "SAPU",
+    	"phone": "+56572495700",
+    	"region": "I TARAPACÁ" 
+  	}
+]

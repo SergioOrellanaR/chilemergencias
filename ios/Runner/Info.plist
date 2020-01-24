@@ -5,11 +5,11 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Es necesario dar autorización de su ubicación para el correcto funcionamiento de esta aplicación</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Needed to access location</string>
+	<string>Es necesario dar autorización de su ubicación para el correcto funcionamiento de esta aplicación</string>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
 	<key>MGLMapboxAccessToken</key>
-	<string>key</string>
+	<string>YOUR_MAPBOX_API_KEY</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -19,7 +19,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>chilemergencias</string>
+	<string>Chilemergencias</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
