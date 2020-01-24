@@ -227,7 +227,7 @@ class _InformationPageState extends State<InformationPage> {
   _footer() {
     return Container(
       child: Row(children: <Widget>[
-        Text(" Developed by: Sergio Orellana Rey - V1.0.0"),
+        Text(" Developed by: Sergio Orellana Rey - V1.0.0", style: TextStyle(fontSize: 12.5),),
         Expanded(child: SizedBox()),
         Image(
           image: AssetImage("assets/chilemergenciasIcon/OrellanaLogo.png"),

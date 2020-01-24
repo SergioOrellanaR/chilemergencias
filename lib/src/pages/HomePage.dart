@@ -43,15 +43,19 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     _lockOrientationToPortrait();
     _screenSize = MediaQuery.of(context).size;
-    return Scaffold(
-        body: Stack(children: <Widget>[
-          mapWithStreaming(),
-          ValidatorWidget(),
-          _mapController == null ? Container() : _goToClosest(),
-          _informationCard ?? Container()
-        ]),
-        floatingActionButton:
-            _mapController == null ? Container() : _createOperationButtons(context));
+    return Semantics(
+      child: Scaffold(
+          body: Stack(children: <Widget>[
+            mapWithStreaming(),
+            ValidatorWidget(),
+            _mapController == null ? Container() : _goToClosest(),
+            _informationCard ?? Container()
+          ]),
+          floatingActionButton: _mapController == null
+              ? Container()
+              : _createOperationButtons(context)),
+      label: "Mapa",
+    );
   }
 
   Future<void> _lockOrientationToPortrait() {
@@ -97,16 +101,18 @@ class _HomePageState extends State<HomePage> {
         Expanded(
           child: SizedBox(),
         ),
-        Row(children: <Widget>[
-          SizedBox(width: 30.0,),
-          _goToInformation(context),
-          Expanded(
-          child: SizedBox(),
-        ),
-          _centerGpsCamera(),
-        ],
+        Row(
+          children: <Widget>[
+            SizedBox(
+              width: 30.0,
+            ),
+            _goToInformation(context),
+            Expanded(
+              child: SizedBox(),
+            ),
+            _centerGpsCamera(),
+          ],
         )
-        
       ],
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -132,7 +138,8 @@ class _HomePageState extends State<HomePage> {
       elevation: 50.0,
       onPressed: () {},
       backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
-      heroTag: isZoomIn ? "btnZoomIn" : "btnZoomOut"
+      heroTag: isZoomIn ? "btnZoomIn" : "btnZoomOut",
+      mini: true,
     );
   }
 
@@ -157,15 +164,15 @@ class _HomePageState extends State<HomePage> {
     _loopActiveOnZoom = false;
   }
 
-  FloatingActionButton _goToInformation(BuildContext context)
-  {
+  FloatingActionButton _goToInformation(BuildContext context) {
     return FloatingActionButton(
       heroTag: "btnInformation",
       onPressed: () {
         Navigator.pushNamed(context, "information");
       },
       child: Icon(Icons.info_outline, size: 35.0),
-      backgroundColor: Color.fromRGBO(80, 80, 80, 1.0)
+      backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
+      mini: true,
     );
   }
 
@@ -175,9 +182,10 @@ class _HomePageState extends State<HomePage> {
         await _mapController
             .animateCamera(CameraUpdate.newLatLngZoom(_myPosition, 14.0));
       },
-      child: Icon(Icons.gps_fixed, size: 40.0),
+      child: Icon(Icons.gps_fixed, size: 35.0),
       backgroundColor: Color.fromRGBO(80, 80, 80, 1.0),
-      heroTag: "btnCenterGPS"
+      heroTag: "btnCenterGPS",
+      mini: true,
     );
   }
 
@@ -282,7 +290,10 @@ class _HomePageState extends State<HomePage> {
 
   Future<Symbol> _addSymbol(String iconImage, LatLng latLng) async {
     return _mapController.addSymbol(SymbolOptions(
-        geometry: latLng, iconImage: iconImage, draggable: false, iconSize: _screenSize.height * 0.0014));
+        geometry: latLng,
+        iconImage: iconImage,
+        draggable: false,
+        iconSize: _screenSize.height * 0.0014));
   }
 
   void _addMarkers() async {
@@ -439,6 +450,4 @@ class _HomePageState extends State<HomePage> {
     _mapController.dispose();
     super.dispose();
   }
-
-  
 }
