@@ -87,18 +87,23 @@ class _InformationCardState extends State<InformationCard> {
   Row _portraitActionButtons() {
     return Row(
       children: <Widget>[
+        _callEmergency(padded: true),
         _howToGetButton(padded: true),
         _callButton(padded: true)
       ],
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     );
   }
 
   Widget _callButton({bool padded = false}) {
     if (widget.phone != null) {
       return FlatButton(
-        child: Text("Llamar"),
+        child: Row(
+          children: <Widget>[
+            Icon(Icons.call),
+            Text("Llamar"),
+          ],
+        ),
         onPressed: _realizePhoneCall,
         textColor: Colors.blue,
         materialTapTargetSize: padded
@@ -112,8 +117,30 @@ class _InformationCardState extends State<InformationCard> {
 
   FlatButton _howToGetButton({bool padded = false}) {
     return FlatButton(
-      child: Text("Cómo llegar"),
+      child: Row(
+        children: <Widget>[
+          Icon(Icons.navigation),
+          Text("Cómo llegar"),
+        ],
+      ),
       onPressed: _openGoogleMapsRouting,
+      textColor: Colors.blue,
+      materialTapTargetSize: padded
+          ? MaterialTapTargetSize.padded
+          : MaterialTapTargetSize.shrinkWrap,
+    );
+  }
+
+  FlatButton _callEmergency({bool padded = false}) {
+    String shortPhoneNumber = utils.emergencyShortPhoneCall(widget.institutionCode);
+    return FlatButton(
+      child: Row(
+        children: <Widget>[
+          Icon(Icons.phone),
+          Text(shortPhoneNumber),
+        ],
+      ),
+      onPressed: () => _callShortPhoneEmergency(shortPhoneNumber),
       textColor: Colors.blue,
       materialTapTargetSize: padded
           ? MaterialTapTargetSize.padded
@@ -184,5 +211,9 @@ class _InformationCardState extends State<InformationCard> {
 
   _realizePhoneCall() {
     launch("tel://" + widget.phone);
+  }
+
+  _callShortPhoneEmergency(String number) {
+    launch("tel://" + number);
   }
 }

@@ -87,6 +87,24 @@ String assetImageOnCardByInstitutionCode(String institutionCode) {
   return value;
 }
 
+String emergencyShortPhoneCall(String institutionCode) {
+  String value;
+  switch (institutionCode) {
+    case "Urgen":
+      value = "131";
+      break;
+    case "Bombe":
+      value = "132";
+      break;
+    case "Carab":
+      value = "133";
+      break;
+    default:
+      break;
+  }
+  return value;
+}
+
 Color setColorByInstitutionCode(String institutionCode) {
   Color color;
 
