@@ -75,6 +75,15 @@ Map<String, AlertHandler> alertController = {
     iconColor: Color.fromRGBO(153, 249, 240, 1.0),
     iconBackgroundColor: Color.fromRGBO(118, 145, 215, 1.0),
     action: (){} 
+  ),
+
+  "unsuccesfulDonation": AlertHandler(
+    title: "No ha sido posible realizar la compra.",
+    description: "No ha sido posible llevar a cabo la compra solicitada",
+    iconData: Icons.sentiment_dissatisfied,
+    iconColor: Color.fromRGBO(153, 249, 240, 1.0),
+    iconBackgroundColor: Color.fromRGBO(118, 145, 215, 1.0),
+    action: (){} 
   )
 };
 

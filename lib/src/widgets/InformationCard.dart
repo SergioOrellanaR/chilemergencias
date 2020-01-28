@@ -29,12 +29,8 @@ class InformationCard extends StatefulWidget {
 class _InformationCardState extends State<InformationCard> {
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-        child: _buildCard(context), visible: globals.isInformationCardVisible);
-
-    // return AnimatedOpacity(opacity: globals.isInformationCardVisible ? 1.0 : 0.0,
-    //       duration: Duration(milliseconds: 800), child: Visibility(child: _buildCard(context), visible: globals.isInformationCardVisible));
-    //return
+    return AnimatedOpacity(opacity: globals.isInformationCardVisible ? 1.0 : 0.0,
+          duration: Duration(milliseconds: 800), child: Visibility(child: _buildCard(context), visible: globals.isInformationCardVisible));
   }
 
   Card _buildCard(BuildContext context) {

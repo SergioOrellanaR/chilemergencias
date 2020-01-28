@@ -19,13 +19,13 @@ class HomePage extends StatefulWidget {
 //https://stackoverflow.com/questions/54910211/errorflutter-lib-ui-ui-dart-state-cc148-unhandled-exception/57087364
 
 class _HomePageState extends State<HomePage> {
-  bool _areMarkersDrawed = false;
   LatLng _myPosition;
   MapboxMapController _mapController;
   MapboxMap _mapBoxMap;
   Map<String, dynamic> _allData;
   List<String> _closestThreeOfEachInstitutionId;
   Map<String, String> _symbolInstitutionConnected;
+  Map<String, Symbol> _markers;
   dynamic closestInformation;
   InformationCard _informationCard;
   bool _buttonPressedonZoom = false;
@@ -36,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _myPosition = new LatLng(0, 0);
+    _markers = new Map<String, Symbol>();
     _createMapBoxMap();
   }
 
@@ -195,13 +196,14 @@ class _HomePageState extends State<HomePage> {
       stream: location.onLocationChanged(),
       builder: (BuildContext context, AsyncSnapshot<LocationData> snapshot) {
         if (snapshot.hasData) {
+
           Widget widget = Container();
           _myPosition = LatLng(snapshot.data.latitude, snapshot.data.longitude);
           //Verificar performance y uso de bateria de actualización en tiempo real de instituciones cercanas.
 
-          if (_mapController != null && _areMarkersDrawed == false) {
+          if (_mapController != null && _markers.isEmpty) {
             widget = drawInstitutionsOnMap();
-          } else if (_mapController != null && _areMarkersDrawed) {
+          } else if (_mapController != null && _markers.isNotEmpty) {
             updateIconsAtNewPosition();
           }
 
@@ -277,7 +279,6 @@ class _HomePageState extends State<HomePage> {
           _closestThreeOfEachInstitutionId = _loadClosestThreeOfEach();
           if (_closestThreeOfEachInstitutionId != null) {
             _addMarkers();
-            _areMarkersDrawed = true;
           }
 
           return Container();
@@ -305,6 +306,8 @@ class _HomePageState extends State<HomePage> {
       String symbolIcon = utils.iconOnMapByInstitution(_institutionCode);
       Symbol sym =
           await _addSymbol(symbolIcon, LatLng(item.latitude, item.longitude));
+      
+      _markers.putIfAbsent(institutionId, () => sym);
 
       _symbolInstitutionConnected.putIfAbsent(sym.id, () => institutionId);
     }
@@ -312,6 +315,7 @@ class _HomePageState extends State<HomePage> {
 
   void _clearMarkers() async {
     await _mapController.clearSymbols();
+    _markers = new Map<String, Symbol>();
   }
 
   Widget _getClosestButtons() {

@@ -171,10 +171,10 @@ class _InformationPageState extends State<InformationPage> {
               if (canAccessToStore) {
                 await _payCoffee();
               } else {
-                _displayErrorCard(context, alertController["unreachableStore"]);
+                _displayAlertCard(context, alertController["unreachableStore"]);
               }
             } catch (e) {
-              _displayErrorCard(context, alertController["unknownError"]);
+              _displayAlertCard(context, alertController["unknownError"]);
             }
           },
           child: Icon(
@@ -195,9 +195,9 @@ class _InformationPageState extends State<InformationPage> {
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
       if (purchaseDetails.status == PurchaseStatus.purchased) {
         if (purchaseDetails.status == PurchaseStatus.purchased) {
-          //OK
+          _displayAlertCard(context, alertController["succesfulDonation"]);
         } else if (purchaseDetails.status == PurchaseStatus.error) {
-          //ERROR
+          _displayAlertCard(context, alertController["unsuccesfulDonation"]);
           return;
         }
       }
@@ -249,7 +249,7 @@ class _InformationPageState extends State<InformationPage> {
     super.dispose();
   }
 
-  void _displayErrorCard(BuildContext context, AlertHandler error) {
+  void _displayAlertCard(BuildContext context, AlertHandler error) {
     showAlert(context, error);
   }
 
